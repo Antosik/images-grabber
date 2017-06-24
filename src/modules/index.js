@@ -1,3 +1,4 @@
 import pixiv from './pixiv';
+import twitter from './twitter';
 
-export { pixiv };
+export { pixiv, twitter };

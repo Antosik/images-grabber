@@ -4,7 +4,7 @@ import clui from 'clui';
 import figlet from 'figlet';
 
 import getLink from './views/getLink';
-import { pixiv } from './modules';
+import { pixiv, twitter } from './modules';
 
 const Progress = clui.Progress;
 const Spinner = clui.Spinner;
@@ -24,8 +24,23 @@ getLink()
     GettingImages.start();
     switch (args.type) {
       case 'Twitter':
-        console.log('Not implemented yet');
-        return null;
+        return twitter.getImages(args.link)
+          .then((images) => {
+            GettingImages.stop();
+            console.log(`Found ${images.length} images!`);
+            return images;
+          })
+          .mapSeries((el, index, len) =>
+            twitter.downloadImage(el, args.path)
+              .then(() => {
+                i += 1;
+                process.stdout.write('\r\x1b[K');
+                process.stdout.write(ProgressBar.update(i / len));
+              }),
+          )
+          .then(() => {
+            console.log(' - Successfully downloaded! \n');
+          });
       case 'Pixiv':
         return pixiv.getImages(args.link, args.all)
           .then((images) => {
