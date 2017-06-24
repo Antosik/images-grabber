@@ -1,0 +1,40 @@
+{
+  "name": "images-grabber",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Antosik <grig_anton96@mail.ru>",
+  "license": "MIT",
+  "scripts": {
+    "start": "yarn dev:start",
+    "dev:start": "cross-env NODE_ENV=dev nodemon --ignore lib --exec babel-node src",
+    "test": "eslint src",
+    "prod:build": "rimraf lib && babel src -d lib --ignore .test.js"
+  },
+  "dependencies": {
+    "axios": "^0.16.2",
+    "bignumber.js": "^4.0.2",
+    "bluebird": "^3.5.0",
+    "chalk": "^1.1.3",
+    "cheerio": "^1.0.0-rc.1",
+    "clear": "^0.0.1",
+    "clui": "^0.3.6",
+    "co": "^4.6.0",
+    "figlet": "^1.2.0",
+    "got": "^7.0.0",
+    "inquirer": "^3.1.1",
+    "lodash": "^4.17.4",
+    "minimist": "^1.2.0",
+    "pixiv-app-api": "^0.10.0",
+    "pixiv-img": "^0.3.1",
+    "preferences": "^0.2.1",
+    "twit": "^2.2.9"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-eslint": "^7.2.3",
+    "babel-preset-env": "^1.5.2",
+    "eslint": "3.19.0",
+    "eslint-config-airbnb-base": "^11.2.0",
+    "eslint-plugin-import": "2.2.0"
+  }
+}

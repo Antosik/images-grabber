@@ -1,0 +1,13 @@
+{
+  "env": {
+    "node": true
+  },
+  "extends": [
+    "airbnb-base"
+  ],
+  "rules": {
+    "semi": [2, "always"],
+    "no-unexpected-multiline": 2,
+    "linebreak-style": [2, "windows"]
+  }
+}
