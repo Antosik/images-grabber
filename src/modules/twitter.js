@@ -10,7 +10,7 @@ BigNumber.config({ DECIMAL_PLACES: 40, ERRORS: false });
 
 const wait = () =>
   new Promise((resolve) => {
-    setTimeout(() => resolve(), 5000);
+    setTimeout(() => resolve(), 2500);
   });
 
 const req = async (url, opt) => {
