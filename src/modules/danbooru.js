@@ -1,4 +1,3 @@
-import Promise from 'bluebird';
 import Danbooru from 'danbooru';
 import fs from 'fs';
 import _ from 'lodash';
@@ -11,9 +10,7 @@ const getImages = async (tags, unsafe) => {
   const count = await danbooru.requestJson('GET counts/posts.json', { tags });
   let results = [];
 
-  if (!count || !count.counts || !count.counts.posts) {
-    return [];
-  }
+  if (!count || !count.counts || !count.counts.posts) return [];
   if (count.counts.posts < 100) results = await danbooru.posts({ limit: 100, page: 1, tags });
   else {
     const queries = [];
