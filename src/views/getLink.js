@@ -2,6 +2,7 @@ import inquirer from 'inquirer';
 
 import { isLink } from '../util/consts';
 import { directoryExists, createDir } from '../util/functions';
+import { validateLink } from '../modules/index';
 
 const isWindows = /^win/.test(process.platform);
 
@@ -22,8 +23,8 @@ function getLink() {
       name: 'link',
       type: 'input',
       message: 'Enter link to user whose pictures you want to grab:',
-      validate(value) {
-        if (value.length && isLink(value)) {
+      validate(value, answers) {
+        if (value.length && isLink(value) && validateLink(answers.type, value)) {
           return true;
         }
         return 'Please enter valid link';

@@ -25,4 +25,17 @@ function downloadImage({ type, path }, image) {
   }
 }
 
-export { getImages, downloadImage };
+function validateLink(type, link) {
+  switch (type) {
+    case 'Twitter':
+      return twitter.validateURL(link);
+    case 'Pixiv':
+      return pixiv.validateURL(link);
+    case '':
+      return pixiv.validateURL(link);
+    default:
+      return Promise.reject('Module not found!');
+  }
+}
+
+export { getImages, downloadImage, validateLink };

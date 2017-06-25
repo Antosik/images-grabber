@@ -6,6 +6,7 @@ import _ from 'lodash';
 import Promise from 'bluebird';
 
 const pixiv = new PixivApi();
+const pixivURLRegExp = new RegExp(/(?:(?:http|https)(?::\/\/)|)(?:www.|)(?:pixiv.net\/member(?:|_illust).php\?id=)(\d{1,})/i);
 
 function* getIllusts(id) {
   let results = [];
@@ -34,9 +35,8 @@ function getIllustrUrls(el, all) {
 }
 
 function getPosts(link) {
-  const pixivRegExp = new RegExp(/(?:http|https)(?::\/\/)(?:www.|)(?:pixiv.net\/member.php\?id=)(\d{1,})/i);
-  if (pixivRegExp.test(link)) {
-    const id = pixivRegExp.exec(link)[1];
+  if (pixivURLRegExp.test(link)) {
+    const id = pixivURLRegExp.exec(link)[1];
     return co(getIllusts(id));
   }
   throw new Error('Invalid pixiv author link!');
@@ -49,4 +49,6 @@ function getImages(link, all) {
 
 const downloadImage = (el, filepath) => pixivImg(el, `${filepath}/${path.basename(el)}`);
 
-export default { getImages, downloadImage };
+const validateURL = link => pixivURLRegExp.test(link);
+
+export default { getImages, downloadImage, validateURL };

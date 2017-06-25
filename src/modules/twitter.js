@@ -5,7 +5,7 @@ import fs from 'fs';
 import path from 'path';
 import Promise from 'bluebird';
 
-
+const twitterURLRegExp = new RegExp(/(?:(?:http|https)(?::\/\/)|)(?:www.|)(?:twitter.com\/)(\w{1,})/i);
 BigNumber.config({ DECIMAL_PLACES: 40, ERRORS: false });
 
 const wait = () =>
@@ -25,9 +25,9 @@ const getMedia = (html) => {
   const $ = cheerio.load(html);
 
   return Promise.all(
-    $('.AdaptiveMedia-photoContainer').map((i, el) => {
-      return $(el).data('image-url');
-    }).get(),
+    $('.AdaptiveMedia-photoContainer').map((i, el) =>
+      $(el).data('image-url'),
+    ).get(),
   );
 };
 
@@ -70,4 +70,6 @@ const downloadImage = async (url, filepath) => {
   fs.writeFileSync(file, data, 'binary');
 };
 
-export default { getImages, downloadImage };
+const validateURL = link => twitterURLRegExp.test(link);
+
+export default { getImages, downloadImage, validateURL };
