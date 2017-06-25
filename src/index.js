@@ -11,7 +11,6 @@ init();
 
   progress.startFind();
   const images = await getImages(args);
-
   if (!images.length) {
     console.error('  No images found :c');
     process.exit(0);

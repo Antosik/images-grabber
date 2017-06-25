@@ -13,11 +13,12 @@ const getLink = () => {
       type: isWindows ? 'rawlist' : 'list',
       message: 'What service you want to use?',
       choices: [
-        'Twitter',
-        'Pixiv',
         'Danbooru',
+        'Deviantart',
+        'Pixiv',
+        'Twitter',
       ],
-      default: 1,
+      default: 2,
     },
     {
       name: 'link',
