@@ -1,69 +1,24 @@
-import chalk from 'chalk';
-import clear from 'clear';
-import clui from 'clui';
-import figlet from 'figlet';
+import { init, getLink, Progress } from './views';
+import { getImages, downloadImage } from './modules';
 
-import getLink from './views/getLink';
-import { pixiv, twitter } from './modules';
-
-const Progress = clui.Progress;
-const Spinner = clui.Spinner;
-
-clear();
-console.log(
-  chalk.blue(
-    figlet.textSync('Img Grabber', { horizontalLayout: 'full' }),
-  ),
-);
+init();
 
 getLink()
   .then((args) => {
-    const ProgressBar = new Progress(20);
-    let i = 0;
-    const GettingImages = new Spinner('We find images, please wait...  ');
-    GettingImages.start();
-    switch (args.type) {
-      case 'Twitter':
-        return twitter.getImages(args.link)
-          .then((images) => {
-            GettingImages.stop();
-            console.log(`Found ${images.length} images!`);
-            return images;
-          })
-          .mapSeries((el, index, len) =>
-            twitter.downloadImage(el, args.path)
-              .then(() => {
-                i += 1;
-                process.stdout.write('\r\x1b[K');
-                process.stdout.write(ProgressBar.update(i / len));
-              }),
-          )
-          .then(() => {
-            console.log(' - Successfully downloaded! \n');
-          });
-      case 'Pixiv':
-        return pixiv.getImages(args.link, args.all)
-          .then((images) => {
-            GettingImages.stop();
-            console.log(`Found ${images.length} images!`);
-            return images;
-          })
-          .mapSeries((el, index, len) =>
-            pixiv.downloadImage(el, args.path)
-              .then(() => {
-                i += 1;
-                process.stdout.write('\r\x1b[K');
-                process.stdout.write(ProgressBar.update(i / len));
-              }),
-          )
-          .then(() => {
-            console.log(' - Successfully downloaded! \n');
-          });
-      case 'DeviantArt':
-        console.log('Not implemented yet');
-        return null;
-      default:
-        break;
-    }
-    throw new Error('invalid type');
+    const progress = new Progress();
+
+    progress.startFind();
+    getImages(args)
+      .then(progress.endFind)
+      .map((el, index, len) =>
+          downloadImage(args, el)
+            .then(progress.imageDownloaded(len)),
+        { concurrency: 10 })
+      .then(() => {
+        console.log(' - Successfully downloaded! \n');
+      })
+      .catch((err) => {
+        console.error(`  Got error: ${err}! \n`);
+        process.exit(1);
+      });
   });
