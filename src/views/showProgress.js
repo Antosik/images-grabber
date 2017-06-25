@@ -25,5 +25,6 @@ export default class {
     this.i += 1;
     process.stdout.write('\r\x1b[K');
     process.stdout.write(`  Downloading images: ${this.ProgressBar.update(this.i / len)}`);
+    return true;
   }
 }

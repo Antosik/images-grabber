@@ -1,17 +1,10 @@
 import Promise from 'bluebird';
 import Danbooru from 'danbooru';
-import path from 'path';
 import fs from 'fs';
-import got from 'got';
 import _ from 'lodash';
+import path from 'path';
 
-const req = async (url, opt) => {
-  opt.headers = {                         // eslint-disable-line no-param-reassign
-    'user-agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64; Trident/7.0; Touch; rv:11.0) like Gecko',
-  };
-  const res = await got(url, opt);
-  return res.body;
-};
+import { req } from '../util/functions';
 
 const getImages = async (tags, unsafe) => {
   const danbooru = unsafe ? new Danbooru() : new Danbooru.Safebooru();

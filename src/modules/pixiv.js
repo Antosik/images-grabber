@@ -1,9 +1,8 @@
-import PixivApi from 'pixiv-app-api';
 import co from 'co';
-import pixivImg from 'pixiv-img';
-import path from 'path';
 import _ from 'lodash';
-import Promise from 'bluebird';
+import path from 'path';
+import PixivApi from 'pixiv-app-api';
+import pixivImg from 'pixiv-img';
 
 const pixiv = new PixivApi();
 const pixivURLRegExp = new RegExp(/(?:(?:http|https)(?::\/\/)|)(?:www.|)(?:pixiv.net\/member(?:|_illust).php\?id=)(\d{1,})/i);
@@ -22,14 +21,10 @@ function* getIllusts(id) {
 }
 
 function getIllustrUrls(el, all) {
-  if (all) {
-    if (el.metaPages && el.metaPages.length > 0) {
-      return [].concat.apply(el.metaPages.map(img => img.imageUrls.original));
-    }
-    return [el.metaSinglePage.originalImageUrl];
-  }
   if (el.metaPages && el.metaPages.length > 0) {
-    return [el.metaPages[0].imageUrls.original];
+    return all ?
+      [].concat.apply(el.metaPages.map(img => img.imageUrls.original)) :
+      [el.metaPages[0].imageUrls.original];
   }
   return [el.metaSinglePage.originalImageUrl];
 }

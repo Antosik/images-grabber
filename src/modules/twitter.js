@@ -1,34 +1,22 @@
-import got from 'got';
-import cheerio from 'cheerio';
 import BigNumber from 'bignumber.js';
+import cheerio from 'cheerio';
+import co from 'co';
 import fs from 'fs';
 import path from 'path';
-import Promise from 'bluebird';
+
+import { req } from '../util/functions';
 
 const twitterURLRegExp = new RegExp(/(?:(?:http|https)(?::\/\/)|)(?:www.|)(?:twitter.com\/)(\w{1,})/i);
 BigNumber.config({ DECIMAL_PLACES: 40, ERRORS: false });
 
-const wait = () =>
-  new Promise((resolve) => {
-    setTimeout(() => resolve(), 2500);
-  });
-
-const req = async (url, opt) => {
-  opt.headers = {                         // eslint-disable-line no-param-reassign
-    'user-agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64; Trident/7.0; Touch; rv:11.0) like Gecko',
-  };
-  const res = await got(url, opt);
-  return res.body;
-};
+const mediaReq = (name, param = '') => req(`https://twitter.com/i/profiles/show/${name}/media_timeline${param}`, { json: true });
 
 const getMedia = (html) => {
   const $ = cheerio.load(html);
 
-  return Promise.all(
-    $('.AdaptiveMedia-photoContainer').map((i, el) =>
-      $(el).data('image-url'),
-    ).get(),
-  );
+  return $('.AdaptiveMedia-photoContainer').map((i, el) =>
+    $(el).data('image-url'),
+  ).get();
 };
 
 const getParam = (html) => {
@@ -40,28 +28,24 @@ const getParam = (html) => {
   return `?last_note_ts=${cxtId}&max_position=${maxId}`;
 };
 
-const twitterMedia = async (name, param, arr, callback) => {
-  const json = await req(
-    `https://twitter.com/i/profiles/show/${name}/media_timeline${param}`,
-    { json: true },
-  );
-  const html = json.items_html;
-  arr = arr.concat(await getMedia(html));             // eslint-disable-line no-param-reassign
+function* getIllusts(name) {
+  let results = [];
+  let json = yield mediaReq(name);
+  let html = json.items_html;
+  results = getMedia(html);
 
-  if (json.has_more_items) {
-    await wait();
-    twitterMedia(name, getParam(html), arr, callback);
-  } else callback(null, arr);
-};
+  while (json.has_more_items) {
+    json = yield mediaReq(name, getParam(html));
+    html = json.items_html;
+    results = results.concat(getMedia(html));
+  }
+
+  return results;
+}
 
 function getImages(link) {
-  return new Promise((resolve) => {
-    let array = [];                                         // eslint-disable-line prefer-const
-    const name = path.basename(link);
-    twitterMedia(name, '', array, (err, arr) => {
-      resolve(arr);
-    });
-  });
+  const name = path.basename(link);
+  return co(getIllusts(name));
 }
 
 const downloadImage = async (url, filepath) => {

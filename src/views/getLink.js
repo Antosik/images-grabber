@@ -6,7 +6,7 @@ import { validateLink } from '../modules/index';
 
 const isWindows = /^win/.test(process.platform);
 
-function getLink() {
+const getLink = () => {
   const questions = [
     {
       name: 'type',
@@ -15,7 +15,6 @@ function getLink() {
       choices: [
         'Twitter',
         'Pixiv',
-        'DeviantArt',
         'Danbooru',
       ],
       default: 1,
@@ -75,6 +74,6 @@ function getLink() {
   ];
 
   return inquirer.prompt(questions);
-}
+};
 
 export default getLink;
