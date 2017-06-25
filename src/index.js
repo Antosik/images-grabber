@@ -13,7 +13,7 @@ getLink()
       .map((el, index, len) =>
           downloadImage(args, el)
             .then(progress.imageDownloaded(len)),
-        { concurrency: 10 })
+        { concurrency: 5 })
       .then(() => {
         console.log(' - Successfully downloaded! \n');
       })

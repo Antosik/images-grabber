@@ -16,6 +16,7 @@ function getLink() {
         'Twitter',
         'Pixiv',
         'DeviantArt',
+        'Danbooru',
       ],
       default: 1,
     },
@@ -29,6 +30,9 @@ function getLink() {
         }
         return 'Please enter valid link';
       },
+      when(answers) {
+        return answers.type !== 'Danbooru';
+      },
     },
     {
       name: 'all',
@@ -36,6 +40,22 @@ function getLink() {
       message: 'Do you want to grab pictures in "collections"?',
       when(answers) {
         return answers.type === 'Pixiv';
+      },
+    },
+    {
+      name: 'tags',
+      type: 'input',
+      message: 'Write tags through a space',
+      when(answers) {
+        return answers.type === 'Danbooru';
+      },
+    },
+    {
+      name: 'unsafe',
+      type: 'confirm',
+      message: 'Do you want to grab unsafe pictures?',
+      when(answers) {
+        return answers.type === 'Danbooru';
       },
     },
     {
