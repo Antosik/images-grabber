@@ -1,7 +1,7 @@
 {
   "name": "images-grabber",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "./lib/index.js",
   "description": "Grab images from some image services",
   "homepage": "https://github.com/Antosik/images-grabber",
   "author": {
@@ -9,12 +9,21 @@
     "email": "grig_anton96@mail.ru",
     "url": "https://vk.com/grig_antosik"
   },
+  "files": [
+    "lib"
+  ],
   "license": "MIT",
+  "preferGlobal": true,
+  "bin": {
+    "images-grabber": "./lib/index.js",
+    "img-grab": "./lib/index.js"
+  },
   "scripts": {
-    "start": "npm run dev:start",
-    "dev:start": "nodemon --ignore lib --exec babel-node src",
-    "test": "eslint src",
-    "prod:build": "rimraf lib && babel src -d lib --ignore .test.js"
+    "start": "node -exec babel-node src",
+    "build": "rimraf lib && babel src -d lib --ignore .test.js",
+    "prepublish": "lec -d -r lib -c LF && nsp check",
+    "pretest": "eslint . --fix",
+    "test": "eslint src"
   },
   "dependencies": {
     "bignumber.js": "^4.0.2",
@@ -39,6 +48,8 @@
     "babel-preset-env": "^1.5.2",
     "eslint": "3.19.0",
     "eslint-config-airbnb-base": "^11.2.0",
-    "eslint-plugin-import": "2.2.0"
+    "eslint-plugin-import": "2.2.0",
+    "lec": "^1.0.1",
+    "nsp": "^2.6.3"
   }
 }

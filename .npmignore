@@ -7,8 +7,8 @@ node_modules/
 # Editors settings
 .idea
 
-# Build files
-lib/
+# Source files
+src/
 
 # Log files
 *.log
