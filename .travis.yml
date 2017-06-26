@@ -3,5 +3,11 @@ node_js:
   - 7
   - 6
   - 4
+
+before_script:
+  - yarn
+
+cache: yarn
+
 script:
-  - npm test
+  - yarn test

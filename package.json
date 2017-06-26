@@ -19,13 +19,13 @@
     "img-grab": "./lib/index.js"
   },
   "scripts": {
-    "start": "node -exec babel-node src",
     "build": "rimraf lib && babel src -d lib --ignore .test.js",
     "prepublish": "lec -d -r lib -c LF && nsp check",
-    "pretest": "eslint . --fix",
+    "pretest": "eslint src --fix",
     "test": "eslint src"
   },
   "dependencies": {
+    "babel-polyfill": "^6.23.0",
     "bignumber.js": "^4.0.2",
     "bluebird": "^3.5.0",
     "chalk": "^1.1.3",
@@ -37,9 +37,10 @@
     "figlet": "^1.2.0",
     "got": "^7.0.0",
     "inquirer": "^3.1.1",
-    "lodash": "^4.17.4",
+    "lodash.flattendeep": "^4.4.0",
     "pixiv-app-api": "^0.10.0",
     "pixiv-img": "^0.3.1",
+    "preferences": "^0.2.1",
     "xml2js": "^0.4.17"
   },
   "devDependencies": {
@@ -50,6 +51,7 @@
     "eslint-config-airbnb-base": "^11.2.0",
     "eslint-plugin-import": "2.2.0",
     "lec": "^1.0.1",
-    "nsp": "^2.6.3"
+    "nsp": "^2.6.3",
+    "rimraf": "^2.6.1"
   }
 }
