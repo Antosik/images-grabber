@@ -2,11 +2,17 @@
   "name": "images-grabber",
   "version": "1.0.0",
   "main": "index.js",
-  "author": "Antosik <grig_anton96@mail.ru>",
+  "description": "Grab images from some image services",
+  "homepage": "https://github.com/Antosik/images-grabber",
+  "author": {
+    "name": "Antosik",
+    "email": "grig_anton96@mail.ru",
+    "url": "https://vk.com/grig_antosik"
+  },
   "license": "MIT",
   "scripts": {
-    "start": "yarn dev:start",
-    "dev:start": "cross-env NODE_ENV=dev nodemon --ignore lib --exec babel-node src",
+    "start": "npm run dev:start",
+    "dev:start": "nodemon --ignore lib --exec babel-node src",
     "test": "eslint src",
     "prod:build": "rimraf lib && babel src -d lib --ignore .test.js"
   },
