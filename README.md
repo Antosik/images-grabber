@@ -3,7 +3,7 @@ Get all images from pixiv/twitter/deviantart profiles and by danbooru tags in a 
 
 ## Getting Started
 
-* Install [node.js](nodejs.org)
+* Install [node.js](https://nodejs.org/en/)
 * Clone repo
 * Run `npm i` or `npm install`
 * After install, run `npm start`
