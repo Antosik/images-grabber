@@ -4,7 +4,7 @@ import co from 'co';
 import fs from 'fs';
 import path from 'path';
 
-import { req } from '../util/functions';
+import { req, wait } from '../util/functions';
 
 const twitterURLRegExp = new RegExp(/(?:(?:http|https)(?::\/\/)|)(?:www.|)(?:twitter.com\/)(\w{1,})/i);
 BigNumber.config({ DECIMAL_PLACES: 40, ERRORS: false });
@@ -29,10 +29,9 @@ const getParam = (html) => {
 };
 
 function* getIllusts(name) {
-  let results = [];
   let json = yield mediaReq(name);
   let html = json.items_html;
-  results = getMedia(html);
+  let results = getMedia(html);
 
   while (json.has_more_items) {
     json = yield mediaReq(name, getParam(html));
@@ -52,6 +51,7 @@ const downloadImage = async (url, filepath) => {
   const file = `${filepath}/${path.basename(url)}`;
   const data = await req(`${url}:orig`, { encoding: null });
   fs.writeFileSync(file, data, 'binary');
+  await wait(100);
 };
 
 const validateURL = link => twitterURLRegExp.test(link);

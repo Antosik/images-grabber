@@ -1,9 +1,9 @@
 import Danbooru from 'danbooru';
 import fs from 'fs';
-import _ from 'lodash';
+import flattenDeep from 'lodash.flattendeep';
 import path from 'path';
 
-import { req } from '../util/functions';
+import { req, wait } from '../util/functions';
 
 const getImages = async (tags, unsafe) => {
   const danbooru = unsafe ? new Danbooru() : new Danbooru.Safebooru();
@@ -20,13 +20,14 @@ const getImages = async (tags, unsafe) => {
     results = await Promise.all(queries);
   }
 
-  return _.flattenDeep(results).map(post => `http://danbooru.donmai.us${post.raw.file_url}`);
+  return flattenDeep(results).map(post => `http://danbooru.donmai.us${post.raw.file_url}`);
 };
 
 const downloadImage = async (url, filepath) => {
   const file = `${filepath}/${path.basename(url)}`;
   const data = await req(url, { encoding: null });
   fs.writeFileSync(file, data, 'binary');
+  await wait(100);
 };
 
 export default { getImages, downloadImage };

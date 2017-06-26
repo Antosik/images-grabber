@@ -4,7 +4,7 @@ import path from 'path';
 import util from 'util';
 import xml2js from 'xml2js';
 
-import { req } from '../util/functions';
+import { req, wait } from '../util/functions';
 
 const deviantartURLRegExp = new RegExp(/(?:(?:http|https)(?::\/\/)|)(?:www.|)(.{1,})(?:.deviantart.com(?:\/|))(?:.*)/i);
 const parser = new xml2js.Parser();
@@ -36,11 +36,9 @@ const getPage = async (name, offset = 0) => {
 };
 
 function* getIllusts(name) {
-  let results = [];
-  let count = 0;
   let json = yield getPage(name);
-  count = json.count;
-  results = json.images;
+  let count = json.count;
+  let results = json.images;
 
   while (json.nextPage) {
     json = yield getPage(name, count);
@@ -60,6 +58,7 @@ const downloadImage = async (url, filepath) => {
   const file = `${filepath}/${path.basename(url)}`;
   const data = await req(url, { encoding: null });
   fs.writeFileSync(file, data, 'binary');
+  await wait(100);
 };
 
 const validateURL = link => deviantartURLRegExp.test(link);
