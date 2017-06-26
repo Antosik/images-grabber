@@ -1,4 +1,7 @@
+#!/usr/bin/env node
+
 import Promise from 'bluebird';
+import 'babel-polyfill';
 
 import { init, getLink, Progress } from './views';
 import { getImages, downloadImage } from './modules';
