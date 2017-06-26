@@ -3,16 +3,17 @@ import twitter from './twitter';
 import danbooru from './danbooru';
 import deviantart from './deviantart';
 
-function getImages({ type, link, tags, unsafe = false, all = false }) {
+function getImages(args) {
+  const { type } = args;
   switch (type) {
     case 'Twitter':
-      return twitter.getImages(link);
+      return twitter.getImages(args);
     case 'Pixiv':
-      return pixiv.getImages(link, all);
+      return pixiv.getImages(args);
     case 'Danbooru':
-      return danbooru.getImages(tags, unsafe);
+      return danbooru.getImages(args);
     case 'Deviantart':
-      return deviantart.getImages(link, all);
+      return deviantart.getImages(args);
     default:
       return Promise.reject('Module not found!');
   }

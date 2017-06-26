@@ -1,4 +1,5 @@
 import inquirer from 'inquirer';
+import Preferences from 'preferences';
 
 import { isLink } from '../util/consts';
 import { directoryExists, createDir } from '../util/functions';
@@ -7,6 +8,8 @@ import { validateLink } from '../modules/index';
 const isWindows = /^win/.test(process.platform);
 
 const getLink = () => {
+  const prefs = new Preferences('images-grabber');
+
   const questions = [
     {
       name: 'type',
@@ -40,6 +43,30 @@ const getLink = () => {
       message: 'Do you want to grab pictures in "collections"?',
       when(answers) {
         return answers.type === 'Pixiv';
+      },
+    },
+    {
+      name: 'pixivLoginAs',
+      type: 'confirm',
+      message: `Do you want to login as ${prefs.pixivUsername}?`,
+      when(answers) {
+        return answers.type === 'Pixiv' && prefs.pixivUsername && prefs.pixivPassword;
+      },
+    },
+    {
+      name: 'pixivUsername',
+      type: 'input',
+      message: 'Enter your pixiv username (or skip)',
+      when(answers) {
+        return answers.type === 'Pixiv' && (!prefs.pixivUsername || !answers.pixivLoginAs);
+      },
+    },
+    {
+      name: 'pixivPassword',
+      type: 'password',
+      message: 'Enter your pixiv password (or skip)',
+      when(answers) {
+        return answers.type === 'Pixiv' && (!prefs.pixivPassword || !answers.pixivLoginAs);
       },
     },
     {
