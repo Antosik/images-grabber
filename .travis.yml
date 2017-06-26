@@ -5,7 +5,7 @@ node_js:
   - 4
 
 install:
-  - yarn install --ignore-scripts
+  - yarn install --ignore-scripts  --ignore-engines
 
 before_script:
   - yarn build
