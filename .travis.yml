@@ -5,7 +5,8 @@ node_js:
   - 4
 
 before_script:
-  - yarn
+  - yarn install --ignore-scripts
+  - yarn build
 
 cache: yarn
 

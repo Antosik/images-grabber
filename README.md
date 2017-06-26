@@ -1,4 +1,8 @@
 # images-grabber
+[![Build Status](https://travis-ci.org/Antosik/images-grabber.svg?branch=master)](https://travis-ci.org/Antosik/images-grabber)
+[![Coverage Status](https://coveralls.io/repos/github/Antosik/images-grabber/badge.svg)](https://coveralls.io/github/Antosik/images-grabber)
+[![NSP Status](https://nodesecurity.io/orgs/antosik/projects/a71a0a22-f08d-4882-a708-727f91d20886/badge)](https://nodesecurity.io/orgs/antosik/projects/a71a0a22-f08d-4882-a708-727f91d20886)
+
 Get all images from pixiv/twitter/deviantart profiles and by danbooru tags in a few moments!
 
 ## Getting Started
