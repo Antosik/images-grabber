@@ -66,7 +66,7 @@ const getLink = (args) => {
       type: 'input',
       message: 'Enter your pixiv username (or skip)',
       when(answers) {
-        return answers.type === 'Pixiv' && (!prefs.pixivUsername || !answers.pixivLoginAs || !args.pixivUsername);
+        return answers.type === 'Pixiv' && ((!prefs.pixivUsername && !args.pixivUsername) || !answers.pixivLoginAs);
       },
     },
     {
@@ -74,7 +74,7 @@ const getLink = (args) => {
       type: 'password',
       message: 'Enter your pixiv password (or skip)',
       when(answers) {
-        return answers.type === 'Pixiv' && (!prefs.pixivPassword || !answers.pixivLoginAs || !args.pixivPassword);
+        return answers.type === 'Pixiv' && ((!prefs.pixivPassword && !args.pixivPassword) || !answers.pixivLoginAs);
       },
     },
     {
