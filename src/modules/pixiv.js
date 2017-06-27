@@ -10,7 +10,13 @@ import { wait } from '../util/functions';
 const pixivURLRegExp = new RegExp(/(?:(?:http|https)(?::\/\/)|)(?:www.|)(?:pixiv.net\/member(?:|_illust).php\?id=)(\d{1,})/i);
 
 function* getWorks(pixiv, id, type) {
-  let json = yield pixiv.userIllusts(id, { type });
+  let json;
+  try {
+    json = yield pixiv.userIllusts(id, { type });
+  } catch (e) {
+    console.error(`    Pixiv request error: ${e}`);
+    json = { illusts: [] };
+  }
   let results = json.illusts.slice();
 
   while (pixiv.hasNext()) {
@@ -40,16 +46,19 @@ function getPosts(pixiv, link) {
 
 const loginToPixiv = async (pixivUsername, pixivPassword, pixivLoginAs) => {
   const prefs = new Preferences('images-grabber');
-  const pixiv = new PixivApi();
+  let pixiv = new PixivApi();
 
-  if (pixivUsername && pixivPassword) {
-    prefs.pixivUsername = pixivUsername;
-    prefs.pixivPassword = pixivPassword;
-    await pixiv.login(prefs.pixivUsername, prefs.pixivPassword);
-    return pixiv;
-  }
-  if (pixivLoginAs) {
-    await pixiv.login(prefs.pixivUsername, prefs.pixivPassword);
+  if ((pixivUsername && pixivPassword) || pixivLoginAs) {
+    try {
+      await pixiv.login(prefs.pixivUsername, prefs.pixivPassword);
+      if (pixivUsername && pixivPassword) {
+        prefs.pixivUsername = pixivUsername;
+        prefs.pixivPassword = pixivPassword;
+      }
+    } catch (e) {
+      console.error(`    Pixiv login errored: ${e}. Continue as guest.`);
+      pixiv = new PixivApi();
+    }
     return pixiv;
   }
 
@@ -64,7 +73,11 @@ const getImages = async ({ link, all, pixivUsername, pixivPassword, pixivLoginAs
 
 const downloadImage = async (url, filepath, index) => {
   const file = `${filepath}/${index}${path.extname(url)}`;
-  await pixivImg(url, file);
+  try {
+    await pixivImg(url, file);
+  } catch (e) {
+    console.error(`    Image (${url}) downloading error: ${e}`);
+  }
   await wait;
 };
 

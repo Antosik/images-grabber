@@ -9,7 +9,15 @@ import { req, wait } from '../util/functions';
 const twitterURLRegExp = new RegExp(/(?:(?:http|https)(?::\/\/)|)(?:www.|)(?:twitter.com\/)(\w{1,})/i);
 BigNumber.config({ DECIMAL_PLACES: 40, ERRORS: false });
 
-const mediaReq = (name, param = '') => req(`https://twitter.com/i/profiles/show/${name}/media_timeline${param}`, { json: true });
+const mediaReq = (name, param = '') =>
+  req(`https://twitter.com/i/profiles/show/${name}/media_timeline${param}`, { json: true })
+    .catch((err) => {
+      console.error(`    Twitter request error: ${err}`);
+      return {
+        has_more_items: false,
+        items_html: '',
+      };
+    });
 
 const getMedia = (html) => {
   const $ = cheerio.load(html);
@@ -42,15 +50,19 @@ function* getIllusts(name) {
   return results;
 }
 
-function getImages(link) {
+function getImages({ link }) {
   const name = path.basename(link);
   return co(getIllusts(name));
 }
 
 const downloadImage = async (url, filepath, index) => {
   const file = `${filepath}/${index}${path.extname(url)}`;
-  const data = await req(`${url}:orig`, { encoding: null });
-  fs.writeFileSync(file, data, 'binary');
+  try {
+    const data = await req(url, { encoding: null });
+    fs.writeFileSync(file, data, 'binary');
+  } catch (e) {
+    console.error(`    Image (${url}) downloading error: ${e}`);
+  }
   await wait(100);
 };
 
