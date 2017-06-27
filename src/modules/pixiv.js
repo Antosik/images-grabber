@@ -62,8 +62,9 @@ const getImages = async ({ link, all, pixivUsername, pixivPassword, pixivLoginAs
   return flattenDeep(flattenDeep(posts).map(el => getIllustrUrls(el, all)));
 };
 
-const downloadImage = async (el, filepath) => {
-  await pixivImg(el, `${filepath}/${path.basename(el)}`);
+const downloadImage = async (url, filepath, index) => {
+  const file = `${filepath}/${index}${path.extname(url)}`;
+  await pixivImg(url, file);
   await wait;
 };
 

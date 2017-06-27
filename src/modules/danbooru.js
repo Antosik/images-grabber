@@ -23,8 +23,8 @@ const getImages = async (tags, unsafe) => {
   return flattenDeep(results).map(post => `http://danbooru.donmai.us${post.raw.file_url}`);
 };
 
-const downloadImage = async (url, filepath) => {
-  const file = `${filepath}/${path.basename(url)}`;
+const downloadImage = async (url, filepath, index) => {
+  const file = `${filepath}/${index}${path.extname(url)}`;
   const data = await req(url, { encoding: null });
   fs.writeFileSync(file, data, 'binary');
   await wait(100);

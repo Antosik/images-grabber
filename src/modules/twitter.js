@@ -47,8 +47,8 @@ function getImages(link) {
   return co(getIllusts(name));
 }
 
-const downloadImage = async (url, filepath) => {
-  const file = `${filepath}/${path.basename(url)}`;
+const downloadImage = async (url, filepath, index) => {
+  const file = `${filepath}/${index}${path.extname(url)}`;
   const data = await req(`${url}:orig`, { encoding: null });
   fs.writeFileSync(file, data, 'binary');
   await wait(100);

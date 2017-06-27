@@ -25,7 +25,7 @@ init();
 
   await Promise.resolve(images)
     .map(async (el, index, len) => {
-      await downloadImage(args, el);
+      await downloadImage(args, el, index);
       progress.imageDownloaded(len);
     }, { concurrency: 5 });
 

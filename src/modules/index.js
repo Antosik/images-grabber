@@ -19,16 +19,16 @@ function getImages(args) {
   }
 }
 
-function downloadImage({ type, path }, image) {
+function downloadImage({ type, path }, image, index) {
   switch (type) {
     case 'Twitter':
-      return twitter.downloadImage(image, path);
+      return twitter.downloadImage(image, path, index);
     case 'Pixiv':
-      return pixiv.downloadImage(image, path);
+      return pixiv.downloadImage(image, path, index);
     case 'Danbooru':
-      return danbooru.downloadImage(image, path);
+      return danbooru.downloadImage(image, path, index);
     case 'Deviantart':
-      return deviantart.downloadImage(image, path);
+      return deviantart.downloadImage(image, path, index);
     default:
       return Promise.reject('Module not found!');
   }
