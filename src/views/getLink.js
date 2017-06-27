@@ -9,7 +9,6 @@ const isWindows = /^win/.test(process.platform);
 
 const getLink = (args) => {
   const prefs = new Preferences('images-grabber');
-
   if (!args.cli) {
     if (args.type === 'Pixiv') {
       if (
@@ -98,7 +97,7 @@ const getLink = (args) => {
       type: 'input',
       message: 'Enter path, where you want to save pictures:',
       when() {
-        return !args.path;
+        return args.cli;
       },
       validate(value) {
         if (value.length && directoryExists(value)) {
