@@ -7,8 +7,16 @@ import { validateLink } from '../modules/index';
 
 const isWindows = /^win/.test(process.platform);
 
-const getLink = () => {
+const getLink = (args) => {
   const prefs = new Preferences('images-grabber');
+
+  if (!args.cli) {
+    if (args.type === 'Pixiv') {
+      if (
+        (prefs.pixivUsername && prefs.pixivPassword) || (args.pixivUsername && args.pixivPassword)
+      ) return args;
+    } else return args;
+  }
 
   const questions = [
     {
@@ -34,7 +42,7 @@ const getLink = () => {
         return 'Please enter valid link';
       },
       when(answers) {
-        return answers.type !== 'Danbooru';
+        return answers.type !== 'Danbooru' && !answers.link;
       },
     },
     {
@@ -58,7 +66,7 @@ const getLink = () => {
       type: 'input',
       message: 'Enter your pixiv username (or skip)',
       when(answers) {
-        return answers.type === 'Pixiv' && (!prefs.pixivUsername || !answers.pixivLoginAs);
+        return answers.type === 'Pixiv' && (!prefs.pixivUsername || !answers.pixivLoginAs || !args.pixivUsername);
       },
     },
     {
@@ -66,7 +74,7 @@ const getLink = () => {
       type: 'password',
       message: 'Enter your pixiv password (or skip)',
       when(answers) {
-        return answers.type === 'Pixiv' && (!prefs.pixivPassword || !answers.pixivLoginAs);
+        return answers.type === 'Pixiv' && (!prefs.pixivPassword || !answers.pixivLoginAs || !args.pixivPassword);
       },
     },
     {
@@ -82,13 +90,16 @@ const getLink = () => {
       type: 'confirm',
       message: 'Do you want to grab unsafe pictures?',
       when(answers) {
-        return answers.type === 'Danbooru';
+        return answers.type === 'Danbooru' && !args.type;
       },
     },
     {
       name: 'path',
       type: 'input',
       message: 'Enter path, where you want to save pictures:',
+      when() {
+        return !args.path;
+      },
       validate(value) {
         if (value.length && directoryExists(value)) {
           return true;

@@ -1,15 +1,17 @@
 #!/usr/bin/env node
 
-import Promise from 'bluebird';
 import 'babel-polyfill';
+import Promise from 'bluebird';
 
 import { init, getLink, Progress } from './views';
 import { getImages, downloadImage } from './modules';
+import getArgs from './util/args';
 
 init();
 
 (async () => {
-  const args = await getLink();
+  const argv = getArgs(process.argv.slice(2));
+  const args = await getLink(argv);
   const progress = new Progress();
 
   progress.startFind();
