@@ -5,6 +5,8 @@ import path from 'path';
 
 import { req, wait } from '../util/functions';
 
+const name = 'Danbooru';
+
 const getImages = async ({ tags, unsafe }) => {
   const danbooru = unsafe ? new Danbooru() : new Danbooru.Safebooru();
   let count = 0;
@@ -40,7 +42,6 @@ const getImages = async ({ tags, unsafe }) => {
 
   return flattenDeep(results).map(post => `https://danbooru.donmai.us${post.raw.file_url}`);
 };
-
 const downloadImage = async (url, filepath, index) => {
   const file = `${filepath}/${index}${path.extname(url)}`;
   try {
@@ -51,5 +52,35 @@ const downloadImage = async (url, filepath, index) => {
   }
   await wait(100);
 };
+const cliargs = {
+  string: [],
+  boolean: ['unsafe'],
+  default: {
+    unsafe: false,
+  },
+  alias: {
+    unsafe: 'un',
+  },
+};
+const validateURL = link => true;                         // eslint-disable-line no-unused-vars
+const questions = (args, prefs) =>                        // eslint-disable-line no-unused-vars
+  [
+    {
+      name: 'tags',
+      type: 'input',
+      message: 'Write tags through a space',
+      when(answers) {
+        return answers.type === name || args.type === name;
+      },
+    },
+    {
+      name: 'unsafe',
+      type: 'confirm',
+      message: 'Do you want to grab unsafe pictures?',
+      when(answers) {
+        return answers.type === name && args.unsafe === undefined;
+      },
+    },
+  ];
 
-export default { getImages, downloadImage };
+export { getImages, downloadImage, validateURL, name, questions, cliargs };

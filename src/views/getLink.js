@@ -1,14 +1,14 @@
 import inquirer from 'inquirer';
 import Preferences from 'preferences';
 
-import { isLink } from '../util/consts';
 import { directoryExists, createDir } from '../util/functions';
-import { validateLink } from '../modules/index';
+import ModulesInit from '../modules';
 
 const isWindows = /^win/.test(process.platform);
 
-const getLink = (args) => {
+const getLink = async (args) => {
   const prefs = new Preferences('images-grabber');
+  const { moduleNames, questions } = await ModulesInit();
   if (!args.cli) {
     if (args.type === 'Pixiv') {
       if (
@@ -17,81 +17,15 @@ const getLink = (args) => {
     } else return args;
   }
 
-  const questions = [
+  const question = [
     {
       name: 'type',
       type: isWindows ? 'rawlist' : 'list',
       message: 'What service you want to use?',
-      choices: [
-        'Danbooru',
-        'Deviantart',
-        'Pixiv',
-        'Twitter',
-      ],
+      choices: moduleNames,
       default: 2,
     },
-    {
-      name: 'link',
-      type: 'input',
-      message: 'Enter link to user whose pictures you want to grab:',
-      validate(value, answers) {
-        if (value.length && isLink(value) && validateLink(answers.type, value)) {
-          return true;
-        }
-        return 'Please enter valid link';
-      },
-      when(answers) {
-        return answers.type !== 'Danbooru' && !answers.link;
-      },
-    },
-    {
-      name: 'all',
-      type: 'confirm',
-      message: 'Do you want to grab pictures in "collections"?',
-      when(answers) {
-        return answers.type === 'Pixiv';
-      },
-    },
-    {
-      name: 'pixivLoginAs',
-      type: 'confirm',
-      message: `Do you want to login as ${prefs.pixivUsername}?`,
-      when(answers) {
-        return answers.type === 'Pixiv' && prefs.pixivUsername && prefs.pixivPassword;
-      },
-    },
-    {
-      name: 'pixivUsername',
-      type: 'input',
-      message: 'Enter your pixiv username (or skip)',
-      when(answers) {
-        return answers.type === 'Pixiv' && ((!prefs.pixivUsername && !args.pixivUsername) || !answers.pixivLoginAs);
-      },
-    },
-    {
-      name: 'pixivPassword',
-      type: 'password',
-      message: 'Enter your pixiv password (or skip)',
-      when(answers) {
-        return answers.type === 'Pixiv' && ((!prefs.pixivPassword && !args.pixivPassword) || !answers.pixivLoginAs);
-      },
-    },
-    {
-      name: 'tags',
-      type: 'input',
-      message: 'Write tags through a space',
-      when(answers) {
-        return answers.type === 'Danbooru';
-      },
-    },
-    {
-      name: 'unsafe',
-      type: 'confirm',
-      message: 'Do you want to grab unsafe pictures?',
-      when(answers) {
-        return answers.type === 'Danbooru' && !args.type;
-      },
-    },
+    ...questions(args, prefs),
     {
       name: 'path',
       type: 'input',
@@ -111,7 +45,7 @@ const getLink = (args) => {
     },
   ];
 
-  return inquirer.prompt(questions);
+  return inquirer.prompt(question);
 };
 
 export default getLink;

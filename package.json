@@ -39,6 +39,8 @@
     "got": "^7.0.0",
     "inquirer": "^3.1.1",
     "lodash.flattendeep": "^4.4.0",
+    "lodash.mergewith": "^4.6.0",
+    "lodash.union": "^4.6.0",
     "minimist": "^1.2.0",
     "pixiv-app-api": "^0.10.0",
     "pixiv-img": "^0.3.1",
@@ -48,6 +50,7 @@
   "devDependencies": {
     "babel-cli": "^6.24.1",
     "babel-eslint": "^7.2.3",
+    "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-preset-env": "^1.5.2",
     "eslint": "3.19.0",
     "eslint-config-airbnb-base": "^11.2.0",

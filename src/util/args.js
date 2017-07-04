@@ -1,30 +1,16 @@
 import parseArgs from 'minimist';
+import ModulesInit from '../modules';
 
-import { validateLink } from '../modules';
-
-const types = ['Pixiv', 'Deviantart', 'Twitter'];
-
-const getArgs = (args) => {
-  const argv = parseArgs(args, {
-    string: ['path', 'pixivUsername', 'pixivPassword'],
-    boolean: ['unsafe'],
-    default: {
-      unsafe: false,
-      path: '.',
-    },
-    '--': true,
-    alias: {
-      path: 'p',
-      unsafe: 'us',
-    },
-  });
+const getArgs = async (mainargs) => {
+  const { moduleNames, args, validateLink } = await ModulesInit();
+  const argv = parseArgs(mainargs, args());
 
   if (argv._.length) {
     let type = 'Danbooru';
     let tags;
     const link = argv._[0];
-    types.forEach((defaultType) => {
-      if (validateLink(defaultType, link)) type = defaultType;
+    moduleNames.forEach((moduleName) => {
+      if (validateLink(moduleName, link)) type = moduleName;
     });
 
     if (type === 'Danbooru') tags = link;

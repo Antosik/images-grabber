@@ -3,14 +3,14 @@
 import 'babel-polyfill';
 import Promise from 'bluebird';
 
-import { init, getLink, Progress } from './views';
-import { getImages, downloadImage } from './modules';
+import { MainWindowInit, getLink, Progress } from './views';
+import ModulesInit from './modules';
 import getArgs from './util/args';
 
-init();
-
 (async () => {
-  const argv = getArgs(process.argv.slice(2));
+  MainWindowInit();
+  const { getImages, downloadImage } = await ModulesInit();
+  const argv = await getArgs(process.argv.slice(2));
   const args = await getLink(argv);
   const progress = new Progress();
 
