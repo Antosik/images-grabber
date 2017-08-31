@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import got from 'got';
+import * as got from 'got';
 
 const getCurrentDirectoryBase = () => path.basename(process.cwd());
 
