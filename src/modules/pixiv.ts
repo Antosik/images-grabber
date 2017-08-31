@@ -1,6 +1,6 @@
 import * as co from 'co';
 import * as flattenDeep from 'lodash.flattendeep';
-import * as path from 'path';
+import { extname } from 'path';
 import * as PixivApi from 'pixiv-app-api';
 import * as pixivImg from 'pixiv-img';
 
@@ -19,11 +19,10 @@ class PixivSearch extends IServiceSearch {
 
     /**
      * Login into pixiv
-     * @param {string} pixivUsername
-     * @param {string} pixivPassword
      * @returns {Promise<boolean>}
      */
-    public async login({pixivUsername, pixivPassword}): Promise<boolean> {
+    public async login(): Promise<boolean> {
+        const { pixivUsername, pixivPassword } = this.options;
         try {
             await this.pixivApi.login(pixivUsername, pixivPassword);
             return true;
@@ -55,13 +54,13 @@ class PixivSearch extends IServiceSearch {
      * @returns {Promise<void>}
      */
     public async downloadImage(url: string, index: number): Promise<void> {
-        const filepath = `${this.filepath}/${index}${path.extname(url)}`;
+        const file = `${this.filepath}/${index}${extname(url)}`;
         try {
-            await pixivImg(url, filepath);
+            await pixivImg(url, file);
         } catch (e) {
             this.events.emit('error', `Image (${url}) downloading error: ${e}`);
         }
-        await wait;
+        await wait();
         this.events.emit('imageDownloaded', index);
     }
 
@@ -79,10 +78,12 @@ class PixivSearch extends IServiceSearch {
             json = {illusts: []};
         }
         let results = json.illusts.slice();
+        this.events.emit('findImages', results.length);
 
         while (this.pixivApi.hasNext()) {
             json = yield this.pixivApi.next();
             results = results.concat(json.illusts);
+            this.events.emit('findImages', results.length);
         }
 
         return results;
@@ -157,4 +158,4 @@ const pixiv: IService = {
     validateLink: (link) => pixiv.regExpLink.test(link),
 };
 
-export {pixiv, PixivSearch};
+export default pixiv;
