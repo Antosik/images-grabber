@@ -8,23 +8,8 @@ import {wait} from '../util/functions';
 import {IQuestion, IQuestionTypes, IService, IServiceSearch} from './serviceTemplate';
 
 class PixivSearch extends IServiceSearch {
-    /**
-     * Gets URLs from post
-     * @param el Author post object
-     * @param {boolean} all Downlod ll of images? (multipage post)
-     * @returns {string[]}
-     */
-    public static getIllustrUrls(el, all: boolean): string[] {
-        if (el.metaPages && el.metaPages.length > 0) {
-            return all ?
-                [].concat.apply(el.metaPages.map((img) => img.imageUrls.original || img.imageUrls.large)) :
-                [el.metaPages[0].imageUrls.original];
-        }
-        return [el.metaSinglePage.originalImageUrl];
-    }
-
-    public pixivApi: PixivApi;
     public authorID: string;
+    private pixivApi: PixivApi;
 
     constructor(public data: string, options: any) {
         super(data, options);
@@ -50,29 +35,6 @@ class PixivSearch extends IServiceSearch {
     }
 
     /**
-     * Gets all posts by type from author profile pages
-     * @param {string} type
-     * @returns {IterableIterator<string[]>}
-     */
-    public * getWorks(type: string): IterableIterator<string[]> {
-        let json;
-        try {
-            json = yield this.pixivApi.userIllusts(this.authorID, {type});
-        } catch (e) {
-            this.events.emit('error', `Pixiv request error: ${e}`);
-            json = {illusts: []};
-        }
-        let results = json.illusts.slice();
-
-        while (this.pixivApi.hasNext()) {
-            json = yield this.pixivApi.next();
-            results = results.concat(json.illusts);
-        }
-
-        return results;
-    }
-
-    /**
      * Gets links of images from author page
      * @returns {Promise<string[]>}
      */
@@ -82,7 +44,7 @@ class PixivSearch extends IServiceSearch {
             co(this.getWorks('manga')),
         ]);
 
-        this.images = flattenDeep(flattenDeep(posts).map((el) => PixivSearch.getIllustrUrls(el, this.options.all)));
+        this.images = flattenDeep(flattenDeep(posts).map((el) => this.getIllustrUrls(el, this.options.all)));
         return this.images;
     }
 
@@ -101,6 +63,44 @@ class PixivSearch extends IServiceSearch {
         }
         await wait;
         this.events.emit('imageDownloaded', index);
+    }
+
+    /**
+     * Gets all posts by type from author profile pages
+     * @param {string} type
+     * @returns {IterableIterator<string[]>}
+     */
+    private * getWorks(type: string): IterableIterator<string[]> {
+        let json;
+        try {
+            json = yield this.pixivApi.userIllusts(this.authorID, {type});
+        } catch (e) {
+            this.events.emit('error', `Pixiv request error: ${e}`);
+            json = {illusts: []};
+        }
+        let results = json.illusts.slice();
+
+        while (this.pixivApi.hasNext()) {
+            json = yield this.pixivApi.next();
+            results = results.concat(json.illusts);
+        }
+
+        return results;
+    }
+
+    /**
+     * Gets URLs from post
+     * @param el Author post object
+     * @param {boolean} all Downlod ll of images? (multipage post)
+     * @returns {string[]}
+     */
+    private getIllustrUrls(el, all: boolean): string[] {
+        if (el.metaPages && el.metaPages.length > 0) {
+            return all ?
+                [].concat.apply(el.metaPages.map((img) => img.imageUrls.original || img.imageUrls.large)) :
+                [el.metaPages[0].imageUrls.original];
+        }
+        return [el.metaSinglePage.originalImageUrl];
     }
 }
 
