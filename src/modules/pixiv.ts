@@ -4,8 +4,8 @@ import * as path from 'path';
 import * as PixivApi from 'pixiv-app-api';
 import * as pixivImg from 'pixiv-img';
 
-import { wait } from '../util/functions';
-import { IQuestion, IQuestionTypes, IService, IServiceSearch } from './serviceTemplate';
+import {wait} from '../util/functions';
+import {IQuestion, IQuestionTypes, IService, IServiceSearch} from './serviceTemplate';
 
 class PixivSearch extends IServiceSearch {
     /**
@@ -27,9 +27,9 @@ class PixivSearch extends IServiceSearch {
     public authorID: string;
 
     constructor(public data: string, options: any) {
-       super(data, options);
-       this.pixivApi = new PixivApi();
-       this.authorID = pixiv.regExpLink.exec(this.resource)[1];
+        super(data, options);
+        this.pixivApi = new PixivApi();
+        this.authorID = pixiv.regExpLink.exec(this.resource)[1];
     }
 
     /**
@@ -38,7 +38,7 @@ class PixivSearch extends IServiceSearch {
      * @param {string} pixivPassword
      * @returns {Promise<boolean>}
      */
-    public async login({ pixivUsername, pixivPassword }): Promise<boolean> {
+    public async login({pixivUsername, pixivPassword}): Promise<boolean> {
         try {
             await this.pixivApi.login(pixivUsername, pixivPassword);
             return true;
@@ -54,13 +54,13 @@ class PixivSearch extends IServiceSearch {
      * @param {string} type
      * @returns {IterableIterator<string[]>}
      */
-    public* getWorks(type: string): IterableIterator<string[]> {
+    public * getWorks(type: string): IterableIterator<string[]> {
         let json;
         try {
-            json = yield this.pixivApi.userIllusts(this.authorID, { type });
+            json = yield this.pixivApi.userIllusts(this.authorID, {type});
         } catch (e) {
             this.events.emit('error', `Pixiv request error: ${e}`);
-            json = { illusts: [] };
+            json = {illusts: []};
         }
         let results = json.illusts.slice();
 
@@ -92,7 +92,7 @@ class PixivSearch extends IServiceSearch {
      * @param {number} index
      * @returns {Promise<void>}
      */
-    public async downloadImage(url: string,  index: number): Promise<void> {
+    public async downloadImage(url: string, index: number): Promise<void> {
         const filepath = `${this.filepath}/${index}${path.extname(url)}`;
         try {
             await pixivImg(url, filepath);
@@ -106,49 +106,55 @@ class PixivSearch extends IServiceSearch {
 
 const pixiv: IService = {
     questions:
-        [ {
-            message: `Enter link to user whose pictures you want to grab
+        [
+            {
+                message: `Enter link to user whose pictures you want to grab
                         (like https://www.pixiv.net/member_illust.php?id=6996493):`,
-            name: 'link',
-            type: IQuestionTypes.input,
-            validate: (value) => {
-                if (value.length && this.validateLink(value)) {
-                    return true;
-                }
-                return 'Please enter valid link';
-            },
-            when: (answers) => answers.type === this.name && !answers.link,
-        } as IQuestion,
-        {
-            message: 'Do you want to grab pictures in "collections"?',
-            name: 'all',
-            type: IQuestionTypes.confirm,
-            when: (answers) => answers.type === this.name,
-        } as IQuestion,
-        {
-            message: (answers) => (`Do you want to login as ${answers.pixivUsername}?`),
-            name: 'pixivLoginAs',
-            type: IQuestionTypes.confirm,
-            when: (answers) => answers.type === this.name && answers.pixivUsername && answers.pixivPassword,
-        } as IQuestion,
-        {
-            message: 'Enter your pixiv username (or skip)',
-            name: 'pixivUsername',
-            type: IQuestionTypes.input,
-            when: (answers) => answers.type === this.name && (!answers.pixivUsername || !answers.pixivLoginAs),
-        } as IQuestion,
-        {
-            message: 'Enter your pixiv password (or skip)',
-            name: 'pixivPassword',
-            type: IQuestionTypes.password,
-            when: (answers) => answers.type === this.name && (!answers.pixivPassword || !answers.pixivLoginAs),
-        } as IQuestion,
-    ],
+                name: 'link',
+                type: IQuestionTypes.input,
+                validate: (value) => {
+                    if (value.length && pixiv.validateLink(value)) {
+                        return true;
+                    }
+                    return 'Please enter valid link';
+                },
+                when: (answers) =>
+                    answers.type === pixiv.serviceName && !answers.link,
+            } as IQuestion,
+            {
+                message: 'Do you want to grab pictures in "collections"?',
+                name: 'all',
+                type: IQuestionTypes.confirm,
+                when: (answers) =>
+                    answers.type === pixiv.serviceName,
+            } as IQuestion,
+            {
+                message: (answers) => (`Do you want to login as ${answers.pixivUsername}?`),
+                name: 'pixivLoginAs',
+                type: IQuestionTypes.confirm,
+                when: (answers) =>
+                    answers.type === pixiv.serviceName && answers.pixivUsername && answers.pixivPassword,
+            } as IQuestion,
+            {
+                message: 'Enter your pixiv username (or skip)',
+                name: 'pixivUsername',
+                type: IQuestionTypes.input,
+                when: (answers) =>
+                    answers.type === pixiv.serviceName && (!answers.pixivUsername || !answers.pixivLoginAs),
+            } as IQuestion,
+            {
+                message: 'Enter your pixiv password (or skip)',
+                name: 'pixivPassword',
+                type: IQuestionTypes.password,
+                when: (answers) =>
+                    answers.type === pixiv.serviceName && (!answers.pixivPassword || !answers.pixivLoginAs),
+            } as IQuestion,
+        ],
     regExpLink: new RegExp(/(?:(?:http|https)(?::\/\/)|)(?:www.|)(?:pixiv.net\/member(?:|_illust).php\?id=)(\d{1,})/i),
     search: (link: string, options: any) => new PixivSearch(link, options),
     serviceLink: 'https://pixiv.net',
     serviceName: 'pixiv',
-    validateLink: (link) => this.regExpLink.test(link),
+    validateLink: (link) => pixiv.regExpLink.test(link),
 };
 
-export { pixiv, PixivSearch };
+export {pixiv, PixivSearch};
