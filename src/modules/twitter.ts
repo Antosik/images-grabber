@@ -124,7 +124,7 @@ const twitter: IService = {
     search: (link: string, options: any) => new TwitterSearch(link, options),
     serviceLink: 'https://twitter.com',
     serviceName: 'twitter',
-    validateLink: (link) => this.regExpLink.test(link),
+    validateLink: (link) => twitter.regExpLink.test(link),
 };
 
 export default twitter;
