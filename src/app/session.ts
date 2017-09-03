@@ -1,6 +1,6 @@
 import * as inquirer from 'inquirer';
 import * as Preferences from 'preferences';
-import {IQuestion, IService} from '../modules/serviceTemplate';
+import {IQuestion, IService, IServiceSearch} from '../modules/serviceTemplate';
 
 const isWindows = /^win/.test(process.platform);
 
@@ -16,9 +16,16 @@ class AppSession {
     public async start() {
         const answers = await this.renderQuestions();
         const searcher = (this.getModuleSearch(answers.type))(answers.link, answers);
-        process.stdout.write('Searching for pictures...');
+        this.handleSearcherEvents(searcher);
+        if (answers.username) {
+            answers[`${answers.type}Username`] = answers.username;
+        }
+        if (answers.password) {
+            answers[`${answers.type}Password`] = answers.password;
+        }
+        process.stdout.write('Searching for pictures...\n');
         await searcher.getImages();
-        process.stdout.write('Downloading pictures...');
+        process.stdout.write('\nDownloading pictures...\n');
         await searcher.downloadImages();
     }
 
@@ -54,8 +61,32 @@ class AppSession {
     private getModuleQuestions(moduleName: string): IQuestion[] {
         return this.modules.get(moduleName).questions;
     }
+
     private getModuleSearch(moduleName: string) {
         return this.modules.get(moduleName).search;
+    }
+
+    private handleSearcherEvents(searcher: IServiceSearch) {
+        searcher.events.on('successLogin', (username, password) => {
+            this.prefs[`${searcher.service}Username`] = username;
+            this.prefs[`${searcher.service}Password`] = password;
+        });
+
+        let downloaded = 0;
+        let count = 0;
+        searcher.events.on('imageDownloaded', () => {
+            downloaded++;
+            process.stdout.write(`Images downloaded: ${downloaded}/${count}\n`);
+        });
+
+        searcher.events.on('findImages', (imagesFound) => {
+            count = imagesFound;
+            process.stdout.write(`Images found: ${imagesFound}\n`);
+        });
+
+        searcher.events.on('error', (error) => {
+            process.stdout.write(`Error: ${error}\n`);
+        });
     }
 }
 
