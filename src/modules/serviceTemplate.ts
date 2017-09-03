@@ -31,6 +31,7 @@ export abstract class IServiceSearch {
     public filepath: string;
     public events: EventEmitter;
     public options: any;
+    public service: string;
 
     public images: string[];
 
@@ -42,6 +43,7 @@ export abstract class IServiceSearch {
         this.images = [];
     }
 
+    public async login?(username: string, password): Promise<boolean>;
     public abstract async getImages(): Promise<string[]>;
     public abstract async downloadImage(url: string,  index: number): Promise<void>;
     public async downloadImages(): Promise<void> {
