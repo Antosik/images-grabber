@@ -5,7 +5,8 @@
     "outDir": "./lib",
     "target": "es5",
     "sourceMap": true,
-    "lib": ["ES2015"]
+    "lib": ["ES6"],
+    "downlevelIteration": true
   },
   "include": [
     "./src/**/*"
