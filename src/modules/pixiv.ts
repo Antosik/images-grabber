@@ -1,6 +1,6 @@
 import * as co from 'co';
 import * as flattenDeep from 'lodash.flattendeep';
-import { extname } from 'path';
+import {extname} from 'path';
 import * as PixivApi from 'pixiv-app-api';
 import * as pixivImg from 'pixiv-img';
 
@@ -22,7 +22,7 @@ class PixivSearch extends IServiceSearch {
      * @returns {Promise<boolean>}
      */
     public async login(): Promise<boolean> {
-        const { pixivUsername, pixivPassword } = this.options;
+        const {pixivUsername, pixivPassword} = this.options;
         try {
             await this.pixivApi.login(pixivUsername, pixivPassword);
             return true;
@@ -38,6 +38,10 @@ class PixivSearch extends IServiceSearch {
      * @returns {Promise<string[]>}
      */
     public async getImages(): Promise<string[]> {
+        const auth = await this.login();
+        if (!auth) {
+            throw new Error('Account credentials need!');
+        }
         const posts = await Promise.all([
             co(this.getWorks('illust')),
             co(this.getWorks('manga')),
