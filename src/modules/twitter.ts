@@ -15,6 +15,7 @@ class TwitterSearch extends IServiceSearch {
     constructor(public data: string, options: any) {
         super(data, options);
         this.authorID = basename(this.resource);
+        this.service = twitter.serviceName;
     }
 
     /**

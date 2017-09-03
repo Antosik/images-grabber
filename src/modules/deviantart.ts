@@ -17,6 +17,7 @@ class DeviantartSearch extends IServiceSearch {
         this.authorID = deviantart.regExpLink.exec(this.resource)[1].split('.')[0];
         this.parser = new xml2js.Parser();
         this.parseXML = promisify(this.parser.parseString);
+        this.service = deviantart.serviceName;
     }
 
     /**

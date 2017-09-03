@@ -15,6 +15,7 @@ class PixivSearch extends IServiceSearch {
         super(data, options);
         this.pixivApi = new PixivApi();
         this.authorID = pixiv.regExpLink.exec(this.resource)[1];
+        this.service = pixiv.serviceName;
     }
 
     /**
@@ -42,6 +43,10 @@ class PixivSearch extends IServiceSearch {
         if (!auth) {
             throw new Error('Account credentials need!');
         }
+        this.events.emit('successLogin', {
+            password: this.options.pixivPassword,
+            username: this.options.pixivUsername,
+        });
         const posts = await Promise.all([
             co(this.getWorks('illust')),
             co(this.getWorks('manga')),
