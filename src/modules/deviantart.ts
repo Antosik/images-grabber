@@ -137,7 +137,7 @@ const deviantart: IService = {
     search: (link: string, options: any) => new DeviantartSearch(link, options),
     serviceLink: 'https://www.deviantart.com/',
     serviceName: 'deviantart',
-    validateLink: (link) => this.regExpLink.test(link),
+    validateLink: (link) => deviantart.regExpLink.test(link),
 };
 
 export default deviantart;
