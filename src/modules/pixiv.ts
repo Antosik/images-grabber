@@ -1,4 +1,4 @@
-import * as co from 'co';
+import co from 'co';
 import * as flattenDeep from 'lodash.flattendeep';
 import {extname} from 'path';
 import * as PixivApi from 'pixiv-app-api';
@@ -94,6 +94,7 @@ class PixivSearch extends IServiceSearch {
             results = results.concat(json.illusts);
             this.events.emit('findImages', results.length);
         }
+        this.events.emit('findImages', results.length);
 
         return results;
     }

@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 import * as cheerio from 'cheerio';
-import * as co from 'co';
+import co from 'co';
 import {writeFileSync} from 'fs';
 import {basename, extname} from 'path';
 
@@ -92,6 +92,7 @@ class TwitterSearch extends IServiceSearch {
             results = results.concat(this.getMedia(html));
             this.events.emit('findImages', results.length);
         }
+        this.events.emit('findImages', results.length);
 
         return results;
     }
