@@ -21,8 +21,8 @@
   "scripts": {
     "start": "npm run build && node lib",
     "build": "rimraf lib && tsc",
-    "prepublish": "lec -d -r lib -c LF && nsp check",
-    "test": "tslint -c ./tslint.json --project ."
+    "prepare": "npm test && npm run build",
+    "test": "tslint -c ./tslint.json --project . && lec -d -r lib -c LF && nsp check"
   },
   "dependencies": {
     "bignumber.js": "^4.0.3",
