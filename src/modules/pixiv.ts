@@ -146,14 +146,14 @@ const pixiv: IService = {
                     answers.type === pixiv.serviceName && answers.pixivUsername && answers.pixivPassword,
             } as IQuestion,
             {
-                message: 'Enter your pixiv username (or skip)',
+                message: 'Enter your pixiv username',
                 name: 'pixivUsername',
                 type: IQuestionTypes.input,
                 when: (answers) =>
                     answers.type === pixiv.serviceName && (!answers.pixivUsername || !answers.pixivLoginAs),
             } as IQuestion,
             {
-                message: 'Enter your pixiv password (or skip)',
+                message: 'Enter your pixiv password',
                 name: 'pixivPassword',
                 type: IQuestionTypes.password,
                 when: (answers) =>
