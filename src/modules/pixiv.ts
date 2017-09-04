@@ -118,8 +118,8 @@ const pixiv: IService = {
     questions:
         [
             {
-                message: `Enter link to user whose pictures you want to grab
-                        (like https://www.pixiv.net/member_illust.php?id=6996493):`,
+                // tslint:disable-next-line max-line-length
+                message: `Enter link to user whose pictures you want to grab (like https://www.pixiv.net/member_illust.php?id=6996493):`,
                 name: 'link',
                 type: IQuestionTypes.input,
                 validate: (value) => {
