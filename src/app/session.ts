@@ -1,4 +1,4 @@
-import { Progress, Spinner } from 'clui';
+import {Progress, Spinner} from 'clui';
 import * as inquirer from 'inquirer';
 import * as Preferences from 'preferences';
 import {IQuestion, IService, IServiceSearch} from '../modules/serviceTemplate';
@@ -8,24 +8,20 @@ const isWindows = /^win/.test(process.platform);
 class AppSession {
     private modules: Map<string, IService>;
     private prefs: Preferences;
+    private args: any;
     private spinner: Spinner;
     private progress: Progress;
 
-    constructor(services: Map<string, IService>) {
+    constructor(services: Map<string, IService>, argument: any = {}) {
         this.modules = services;
         this.prefs = new Preferences('images-grabber');
+        this.args = argument;
     }
 
     public async start() {
         const answers = await this.renderQuestions();
         const searcher = (this.getModuleSearch(answers.type))(answers.link, answers);
         this.handleSearcherEvents(searcher);
-        if (answers.username) {
-            answers[`${answers.type}Username`] = answers.username;
-        }
-        if (answers.password) {
-            answers[`${answers.type}Password`] = answers.password;
-        }
 
         process.stdout.write('  Searching for pictures...\n');
         this.spinner = new Spinner('Images found: 0');
@@ -33,6 +29,7 @@ class AppSession {
         await searcher.getImages();
         this.spinner.stop();
         process.stdout.write(`  Found images in total: ${searcher.images.length}\n`);
+        searcher.events.emit('findImages', searcher.images.length);
 
         this.progress = new Progress(20);
         process.stdout.write('\n  Starting downloading pictures...\n');
@@ -41,18 +38,27 @@ class AppSession {
 
     private async renderQuestions() {
         const modulesQuestion = this.selectModulesValues();
-        let answers = {...this.prefs};
+        let answers = {...this.prefs, ...this.args};
 
-        const answerType = await inquirer.prompt([{
-            choices: modulesQuestion,
-            message: 'Select service',
-            name: 'type',
-            type: isWindows ? 'rawlist' : 'list',
-        }], answers);
+        const answerType = await inquirer.prompt([
+            {
+                choices: modulesQuestion,
+                message: 'Select service',
+                name: 'type',
+                type: isWindows ? 'rawlist' : 'list',
+                when: (answer) => !answer.type,
+            },
+        ], answers);
+        if (answers.username) {
+            answers[`${answers.type}Username`] = answers.username;
+        }
+        if (answers.password) {
+            answers[`${answers.type}Password`] = answers.password;
+        }
         answers = {...answerType, ...answers};
 
         const answersModule = await inquirer.prompt(
-            this.getModuleQuestions(answerType.type), answers,
+            this.getModuleQuestions(answers.type), answers,
         );
         return {...answersModule, ...answers};
     }
