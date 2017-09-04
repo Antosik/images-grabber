@@ -20,9 +20,9 @@
   },
   "scripts": {
     "start": "npm run build && node lib",
-    "build": "rimraf lib && tsc",
+    "build": "rimraf lib && tsc && lec -d -r lib -c LF",
     "prepare": "npm test && npm run build",
-    "test": "tslint -c ./tslint.json --project . && lec -d -r lib -c LF && nsp check"
+    "test": "tslint -c ./tslint.json --project . && nsp check"
   },
   "dependencies": {
     "bignumber.js": "^4.0.3",
