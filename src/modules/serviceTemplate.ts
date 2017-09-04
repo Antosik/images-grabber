@@ -1,5 +1,6 @@
 import * as bluebirdPromise from 'bluebird';
 import { EventEmitter } from 'events';
+import { createDir, directoryExists } from '../util/functions';
 
 export enum IQuestionTypes {
     list = 'list',
@@ -47,6 +48,9 @@ export abstract class IServiceSearch {
     public abstract async getImages(): Promise<string[]>;
     public abstract async downloadImage(url: string,  index: number): Promise<void>;
     public async downloadImages(): Promise<void> {
+        if (!directoryExists(this.filepath)) {
+            createDir(this.filepath);
+        }
         bluebirdPromise
             .resolve(this.images)
             .map(async (url, index) => {
