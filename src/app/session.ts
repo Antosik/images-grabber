@@ -1,3 +1,4 @@
+import { Progress, Spinner } from 'clui';
 import * as inquirer from 'inquirer';
 import * as Preferences from 'preferences';
 import {IQuestion, IService, IServiceSearch} from '../modules/serviceTemplate';
@@ -7,6 +8,8 @@ const isWindows = /^win/.test(process.platform);
 class AppSession {
     private modules: Map<string, IService>;
     private prefs: Preferences;
+    private spinner: Spinner;
+    private progress: Progress;
 
     constructor(services: Map<string, IService>) {
         this.modules = services;
@@ -23,9 +26,16 @@ class AppSession {
         if (answers.password) {
             answers[`${answers.type}Password`] = answers.password;
         }
-        process.stdout.write('Searching for pictures...\n');
+
+        process.stdout.write('  Searching for pictures...\n');
+        this.spinner = new Spinner('Images found: 0');
+        this.spinner.start();
         await searcher.getImages();
-        process.stdout.write('\nDownloading pictures...\n');
+        this.spinner.stop();
+        process.stdout.write(`  Found images in total: ${searcher.images.length}\n`);
+
+        this.progress = new Progress(20);
+        process.stdout.write('\n  Starting downloading pictures...\n');
         await searcher.downloadImages();
     }
 
@@ -67,21 +77,26 @@ class AppSession {
     }
 
     private handleSearcherEvents(searcher: IServiceSearch) {
-        searcher.events.on('successLogin', (username, password) => {
-            this.prefs[`${searcher.service}Username`] = username;
-            this.prefs[`${searcher.service}Password`] = password;
+        const self = this;
+
+        searcher.events.on('successLogin', (credentials) => {
+            process.stdout.write(`            Successfully entered as ${credentials.username}`);
+            this.prefs[`${searcher.service}Username`] = credentials.username;
+            this.prefs[`${searcher.service}Password`] = credentials.password;
         });
 
         let downloaded = 0;
         let count = 0;
         searcher.events.on('imageDownloaded', () => {
             downloaded++;
-            process.stdout.write(`Images downloaded: ${downloaded}/${count}\n`);
+            process.stdout.write('\r\x1b[K');
+            // tslint:disable-next-line max-line-length
+            process.stdout.write(`  Downloading pictures: ${self.progress.update(downloaded / count)} (${downloaded}/${count})`);
         });
 
         searcher.events.on('findImages', (imagesFound) => {
             count = imagesFound;
-            process.stdout.write(`Images found: ${imagesFound}\n`);
+            this.spinner.message(`Images found: ${imagesFound}`);
         });
 
         searcher.events.on('error', (error) => {
