@@ -6,19 +6,25 @@
 [![NPM install](https://nodei.co/npm/images-grabber.png?mini=true)](https://www.npmjs.com/package/images-grabber)
 
 
-Get all images from pixiv/twitter/deviantart profiles and by danbooru tags in a few moments!
+Download all images from pixiv/twitter/deviantart profiles!
 
 ### How to run
+__Install__
+* Install [node.js](https://nodejs.org/en/)
+* Run `npm install -g images-grabber` in console
+* Run in console `images-grabber`
+
+
 __Usage__
 
 `$ img-grab <link>` or `$ images-grabber <link>`
  
 __Options__
 ```
--p, --path   - directory to saved images (default - current directory)
--us, --unsafe  - download unsafe pictures (default - false)
+-p, --path   - directory to saved images (default - current directory + '/images')
+-u, --unsafe  - download unsafe pictures (default - false)
  
--pixivUsername and -pixivPassword - if you want to download private pictures too
+--username and --password - if you want to download private pictures too
 ```
 __Example__
 
@@ -27,7 +33,6 @@ __Example__
 
 ### Supported services
 
-* [Danbooru/Safebooru](https://safebooru.donmai.us/) (by tags)
 * [DeviantArt](http://www.deviantart.com/) (by user profile link)
 * [Twitter](https://twitter.com/) (by user profile link) _(must be public!)_
 * [Pixiv](https://www.pixiv.net/) (by user profile link)
@@ -43,4 +48,3 @@ __Example__
 * [Build a JavaScript Command Line Interface (CLI) with Node.js](https://www.sitepoint.com/javascript-command-line-interface-cli-node-js/) from [sitepoint.com](https://www.sitepoint.com)
 * [node-twitter-media](https://github.com/tukiyururu/node-twitter-media) by [tukiyururu](https://github.com/tukiyururu)
 * [pixiv-app-api](https://github.com/akameco/pixiv-app-api) and [pixiv-img](https://github.com/akameco/pixiv-img) by [akameco](https://github.com/akameco)
-* [danbooru-node](https://github.com/stawberri/danbooru-node) by [stawberri](https://github.com/stawberri)

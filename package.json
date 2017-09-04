@@ -20,24 +20,21 @@
   },
   "scripts": {
     "start": "npm run build && node lib",
-    "build": "rimraf lib && babel src -d lib --ignore .test.js",
-    "prepublish": "lec -d -r lib -c LF && nsp check",
-    "pretest": "eslint src --fix",
-    "test": "eslint src"
+    "build": "rimraf lib && tsc && lec -d -r lib -c LF",
+    "prepare": "npm test && npm run build",
+    "test": "tslint -c ./tslint.json --project . && nsp check"
   },
   "dependencies": {
-    "babel-polyfill": "^6.23.0",
-    "bignumber.js": "^4.0.2",
+    "bignumber.js": "^4.0.3",
     "bluebird": "^3.5.0",
     "chalk": "^1.1.3",
     "cheerio": "^1.0.0-rc.1",
     "clear": "^0.0.1",
     "clui": "^0.3.6",
     "co": "^4.6.0",
-    "danbooru": "^2.0.3",
     "figlet": "^1.2.0",
     "got": "^7.0.0",
-    "inquirer": "^3.1.1",
+    "inquirer": "github:Antosik/Inquirer.js",
     "lodash.flattendeep": "^4.4.0",
     "lodash.mergewith": "^4.6.0",
     "lodash.union": "^4.6.0",
@@ -48,15 +45,11 @@
     "xml2js": "^0.4.17"
   },
   "devDependencies": {
-    "babel-cli": "^6.24.1",
-    "babel-eslint": "^7.2.3",
-    "babel-plugin-transform-object-rest-spread": "^6.23.0",
-    "babel-preset-env": "^1.5.2",
-    "eslint": "3.19.0",
-    "eslint-config-airbnb-base": "^11.2.0",
-    "eslint-plugin-import": "2.2.0",
+    "@types/node": "^8.0.26",
     "lec": "^1.0.1",
     "nsp": "^2.6.3",
-    "rimraf": "^2.6.1"
+    "rimraf": "^2.6.1",
+    "tslint": "^5.7.0",
+    "typescript": "^2.5.1"
   }
 }

@@ -12,3 +12,6 @@ src/
 
 # Log files
 *.log
+
+# Images
+images/

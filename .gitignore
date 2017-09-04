@@ -12,3 +12,6 @@ lib/
 
 # Log files
 *.log
+
+# Images
+images/
