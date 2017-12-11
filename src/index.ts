@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import App from './app/app';
 
-(async () => {
-    await App.init(process.argv.slice(2));
-})();
+export default App ;
+export * from './modules/deviantart';
+export * from './modules/pixiv';
+export * from './modules/twitter';

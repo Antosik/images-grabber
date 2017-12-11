@@ -142,4 +142,4 @@ const deviantart: IService = {
     validateLink: (link) => deviantart.regExpLink.test(link),
 };
 
-export default deviantart;
+export { deviantart as deviantartService , DeviantartSearch as deviantartSearch };

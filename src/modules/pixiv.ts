@@ -168,4 +168,4 @@ const pixiv: IService = {
     validateLink: (link) => pixiv.regExpLink.test(link),
 };
 
-export default pixiv;
+export { pixiv as pixivService , PixivSearch as pixivSearch };

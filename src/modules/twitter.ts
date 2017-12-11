@@ -129,4 +129,4 @@ const twitter: IService = {
     validateLink: (link) => twitter.regExpLink.test(link),
 };
 
-export default twitter;
+export { twitter as twitterService , TwitterSearch as twitterSearch };

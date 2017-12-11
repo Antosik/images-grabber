@@ -15,11 +15,11 @@
   "license": "MIT",
   "preferGlobal": true,
   "bin": {
-    "images-grabber": "./lib/index.js",
-    "img-grab": "./lib/index.js"
+    "images-grabber": "./lib/bin/index.js",
+    "img-grab": "./lib/bin/index.js"
   },
   "scripts": {
-    "start": "npm run build && node lib",
+    "start": "npm run build && node lib/bin",
     "build": "rimraf lib && tsc && lec -d -r lib -c LF",
     "prepare": "npm test && npm run build",
     "test": "tslint -c ./tslint.json --project . && nsp check"
