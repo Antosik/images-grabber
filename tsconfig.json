@@ -1,12 +1,17 @@
 {
   "compilerOptions": {
-    "allowJs": true,
     "module": "commonjs",
-    "outDir": "./lib",
-    "target": "es5",
+    "target": "es6",
+    "moduleResolution": "node",
     "sourceMap": true,
-    "lib": ["ES6"],
-    "downlevelIteration": true
+    "outDir": "lib",
+    "baseUrl": ".",
+    "paths": {
+        "*": [
+            "node_modules/*",
+            "src/types/*"
+        ]
+    }
   },
   "include": [
     "./src/**/*"
