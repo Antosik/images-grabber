@@ -1,8 +1,9 @@
-import {readdirSync} from 'fs';
-import * as minimist from 'minimist';
-import {extname, resolve} from 'path';
-import {IService} from '../modules/serviceTemplate';
-import AppSession from './session';
+import { readdirSync } from "fs";
+import * as minimist from "minimist";
+import { extname, resolve } from "path";
+
+import { IService } from "../modules/serviceTemplate";
+import AppSession from "./session";
 
 class App {
     public static modules: Map<string, IService>;
@@ -18,10 +19,10 @@ class App {
     }
 
     private static async loadModules(): Promise<void> {
-        return readdirSync(resolve(__dirname, '../modules'))
-            .filter((file) => (extname(file) === '.js') && (file !== 'serviceTemplate.js'))
+        return readdirSync(resolve(__dirname, "../modules"))
+            .filter((file) => (extname(file) === ".js") && (file !== "serviceTemplate.js"))
             .forEach(async (file) => {
-                const module: IService = (await require(resolve(__dirname, '../modules', `./${file}`))).default;
+                const module: IService = (await require(resolve(__dirname, "../modules", `./${file}`))).default;
                 App.modules.set(module.serviceName, module);
             });
     }
@@ -29,18 +30,18 @@ class App {
     private static getArgs(args: string[]): any {
         const parsedArgs = minimist(args, {
             alias: {
-                path: 'p',
-                unsafe: 'u',
+                path: "p",
+                unsafe: "u",
             },
-            boolean: ['unsafe'],
+            boolean: ["unsafe"],
             default: {
-                path: 'images',
+                path: "images",
                 unsafe: false,
             },
-            string: ['path', 'username', 'pssword'],
+            string: ["path", "username", "pssword"],
         });
         if (parsedArgs._.length) {
-            let type = '';
+            let type = "";
             const link = parsedArgs._[0];
             App.modules.forEach((module) => {
                 if (module.validateLink(link)) {

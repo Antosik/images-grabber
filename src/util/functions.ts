@@ -1,6 +1,6 @@
-import * as fs from 'fs';
-import * as got from 'got';
-import * as path from 'path';
+import * as fs from "fs";
+import * as got from "got";
+import * as path from "path";
 
 const getCurrentDirectoryBase = () => path.basename(process.cwd());
 
@@ -22,8 +22,8 @@ const createDir = (filePath: string): boolean => {
 };
 
 const req = async (url: string, opt: any = {}) => {
-    opt.headers = {                         // eslint-disable-line no-param-reassign
-        'user-agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64; Trident/7.0; Touch; rv:11.0) like Gecko',
+    opt.headers = {
+        "user-agent": "Mozilla/5.0 (Windows NT 6.3; WOW64; Trident/7.0; Touch; rv:11.0) like Gecko",
     };
     const res = await got(url, opt);
     return res.body;

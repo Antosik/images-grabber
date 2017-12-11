@@ -1,7 +1,7 @@
-import {Progress, Spinner} from 'clui';
-import * as inquirer from 'inquirer';
-import * as Preferences from 'preferences';
-import {IQuestion, IService, IServiceSearch} from '../modules/serviceTemplate';
+import { Progress, Spinner } from "clui";
+import * as inquirer from "inquirer";
+import * as Preferences from "preferences";
+import { IQuestion, IService, IServiceSearch } from "../modules/serviceTemplate";
 
 const isWindows = /^win/.test(process.platform);
 
@@ -14,7 +14,7 @@ class AppSession {
 
     constructor(services: Map<string, IService>, argument: any = {}) {
         this.modules = services;
-        this.prefs = new Preferences('images-grabber');
+        this.prefs = new Preferences("images-grabber");
         this.args = argument;
     }
 
@@ -23,16 +23,16 @@ class AppSession {
         const searcher = (this.getModuleSearch(answers.type))(answers.link, answers);
         this.handleSearcherEvents(searcher);
 
-        process.stdout.write('  Searching for pictures...\n');
-        this.spinner = new Spinner('Images found: 0');
+        process.stdout.write("  Searching for pictures...\n");
+        this.spinner = new Spinner("Images found: 0");
         this.spinner.start();
         await searcher.getImages();
         this.spinner.stop();
         process.stdout.write(`  Found images in total: ${searcher.images.length}\n`);
-        searcher.events.emit('findImages', searcher.images.length);
+        searcher.events.emit("findImages", searcher.images.length);
 
         this.progress = new Progress(20);
-        process.stdout.write('\n  Starting downloading pictures...\n');
+        process.stdout.write("\n  Starting downloading pictures...\n");
         await searcher.downloadImages();
     }
 
@@ -43,9 +43,9 @@ class AppSession {
         const answerType = await inquirer.prompt([
             {
                 choices: modulesQuestion,
-                message: 'Select service',
-                name: 'type',
-                type: isWindows ? 'rawlist' : 'list',
+                message: "Select service",
+                name: "type",
+                type: isWindows ? "rawlist" : "list",
                 when: (answer) => !answer.type,
             },
         ], answers);
@@ -85,7 +85,7 @@ class AppSession {
     private handleSearcherEvents(searcher: IServiceSearch) {
         const self = this;
 
-        searcher.events.on('successLogin', (credentials) => {
+        searcher.events.on("successLogin", (credentials) => {
             process.stdout.write(`            Successfully entered as ${credentials.username}`);
             this.prefs[`${searcher.service}Username`] = credentials.username;
             this.prefs[`${searcher.service}Password`] = credentials.password;
@@ -93,19 +93,19 @@ class AppSession {
 
         let downloaded = 0;
         let count = 0;
-        searcher.events.on('imageDownloaded', () => {
+        searcher.events.on("imageDownloaded", () => {
             downloaded++;
-            process.stdout.write('\r\x1b[K');
+            process.stdout.write("\r\x1b[K");
             // tslint:disable-next-line max-line-length
             process.stdout.write(`  Downloading pictures: ${self.progress.update(downloaded / count)} (${downloaded}/${count})`);
         });
 
-        searcher.events.on('findImages', (imagesFound) => {
+        searcher.events.on("findImages", (imagesFound) => {
             count = imagesFound;
             this.spinner.message(`Images found: ${imagesFound}`);
         });
 
-        searcher.events.on('error', (error) => {
+        searcher.events.on("error", (error) => {
             process.stdout.write(`Error: ${error}\n`);
         });
     }

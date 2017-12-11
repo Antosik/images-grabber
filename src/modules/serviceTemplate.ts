@@ -1,12 +1,12 @@
-import * as bluebirdPromise from 'bluebird';
-import { EventEmitter } from 'events';
-import { createDir, directoryExists } from '../util/functions';
+import * as bluebirdPromise from "bluebird";
+import { EventEmitter } from "events";
+import { createDir, directoryExists } from "../util/functions";
 
 export enum IQuestionTypes {
-    list = 'list',
-    confirm = 'confirm',
-    input = 'input',
-    password = 'password',
+    list = "list",
+    confirm = "confirm",
+    input = "input",
+    password = "password",
 }
 
 export interface IQuestion {
@@ -36,10 +36,10 @@ export abstract class IServiceSearch {
 
     public images: string[];
 
-    public constructor(public data: string, options: any = { path: 'images', all: true }) {
+    public constructor(public data: string, options: any = { path: "images", all: true }) {
         this.resource = data;
         this.options = options;
-        this.filepath = options.path || 'images';
+        this.filepath = options.path || "images";
         this.events = new EventEmitter();
         this.images = [];
     }
