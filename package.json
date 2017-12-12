@@ -26,7 +26,6 @@
   },
   "dependencies": {
     "bignumber.js": "^4.1.0",
-    "bluebird": "^3.5.1",
     "chalk": "^1.1.3",
     "cheerio": "^1.0.0-rc.2",
     "clear": "0.0.1",

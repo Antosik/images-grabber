@@ -1,4 +1,3 @@
-import * as bluebirdPromise from "bluebird";
 import { EventEmitter } from "events";
 import { Questions } from "inquirer";
 
@@ -46,11 +45,7 @@ export abstract class IServiceSearch {
         if (!isDirExist) {
             await createDir(this.filepath);
         }
-        bluebirdPromise
-            .resolve(this.images)
-            .map(async (url, index) => {
-                await this.downloadImage(url, index);
-            }, { concurrency: 5 });
+        await Promise.all(this.images.map((url, i) => this.downloadImage(url, i)));
         return;
     }
 }
