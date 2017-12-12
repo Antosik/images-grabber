@@ -49,6 +49,7 @@
     "@types/inquirer": "0.0.35",
     "@types/minimist": "^1.2.0",
     "@types/node": "^8.0.57",
+    "@types/xml2js": "^0.4.2",
     "lec": "^1.0.1",
     "nsp": "^2.8.1",
     "rimraf": "^2.6.2",
