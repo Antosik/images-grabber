@@ -2,7 +2,7 @@ import { Progress, Spinner } from "clui";
 import * as inquirer from "inquirer";
 import * as Preferences from "preferences";
 
-import { IQuestion, IService, IServiceSearch } from "../modules/serviceTemplate";
+import { IService, IServiceSearch } from "../modules/serviceTemplate";
 
 const isWindows = /^win/.test(process.platform);
 
@@ -104,8 +104,9 @@ class AppSession {
     /**
      * Get questions of selected module
      * @param moduleName Name of module
+     * @returns {inquirer.Questions} Module's questions
      */
-    private getModuleQuestions(moduleName: string): IQuestion[] {
+    private getModuleQuestions(moduleName: string): inquirer.Questions {
         return this.modules.get(moduleName).questions;
     }
 
@@ -114,7 +115,7 @@ class AppSession {
      * Get search class of selected module
      * @param moduleName Name of module
      */
-    private getModuleSearch(moduleName: string) {
+    private getModuleSearch(moduleName: string): IService["search"] {
         return this.modules.get(moduleName).search;
     }
 
@@ -122,7 +123,7 @@ class AppSession {
      * Handle events of searching/downloading
      * @param searcher Search object
      */
-    private handleSearcherEvents(searcher: IServiceSearch) {
+    private handleSearcherEvents(searcher: IServiceSearch): void {
         const self = this;
 
         searcher.events.on("successLogin", (credentials) => {

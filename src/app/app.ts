@@ -1,9 +1,9 @@
-import { readdirSync } from "fs";
 import * as minimist from "minimist";
 import { extname, resolve } from "path";
 
-import { IService } from "../modules/serviceTemplate";
 import AppSession from "./session";
+import { IService } from "../modules/serviceTemplate";
+import { readDir } from "../util/functions";
 
 class App {
     public static modules: Map<string, IService>;
@@ -26,7 +26,9 @@ class App {
      * Load modules
      */
     private static async loadModules(): Promise<void> {
-        return readdirSync(resolve(__dirname, "../modules"))
+        const moduleFiles = await readDir(resolve(__dirname, "../modules"));
+
+        return moduleFiles
             .filter((file) => (extname(file) === ".js") && (file !== "serviceTemplate.js"))
             .forEach(async (file) => {
                 try {

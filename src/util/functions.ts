@@ -1,25 +1,43 @@
-import * as fs from "fs";
+import { mkdir, readdir, stat } from "fs";
 import * as got from "got";
-import * as path from "path";
+import { basename } from "path";
+import { promisify } from "util";
 
-const getCurrentDirectoryBase = () => path.basename(process.cwd());
+const mkdirAsync = promisify(mkdir);
+const readdirAsync = promisify(readdir);
+const statAsync = promisify(stat);
 
-const directoryExists = (filePath: string): boolean => {
-    try {
-        return fs.statSync(filePath).isDirectory();
-    } catch (err) {
-        return false;
-    }
-};
+const getCurrentDirectoryBase = () => basename(process.cwd());
 
-const createDir = (filePath: string): boolean => {
-    try {
-        fs.mkdirSync(filePath);
-        return true;
-    } catch (err) {
-        return false;
-    }
-};
+/**
+ * Checks, is directory exists
+ * @param {string} dirPath directory path
+ * @returns {Promise<boolean>}
+ */
+const directoryExists = (dirPath: string): Promise<boolean> =>
+    statAsync(dirPath)
+        .then(stats => stats.isDirectory())
+        .catch(() => false);
+
+/**
+ * Creates directory
+ * @param {string} dirPath directory path
+ * @returns {Promise<boolean>}
+ */
+const createDir = (dirPath: string): Promise<boolean> =>
+    mkdirAsync(dirPath)
+        .then(() => true)
+        .catch(() => false);
+
+/**
+ * Load file names in directory
+ * @param {string} dirPath directory path
+ * @returns {Promise<string[]>}
+ */
+const readDir = (dirPath: string): Promise<string[]> =>
+    readdirAsync(dirPath)
+        .catch(() => []);
+
 
 const req = async (url: string, opt: any = {}) => {
     opt.headers = {
@@ -38,6 +56,7 @@ export {
     getCurrentDirectoryBase,
     directoryExists,
     createDir,
+    readDir,
     req,
     wait,
 };

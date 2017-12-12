@@ -1,11 +1,12 @@
 import co from "co";
 import { writeFileSync } from "fs";
+import { Question } from "inquirer";
 import { extname } from "path";
 import { promisify } from "util";
 import * as xml2js from "xml2js";
 
 import { req, wait } from "../util/functions";
-import { IQuestion, IQuestionTypes, IService, IServiceSearch } from "./serviceTemplate";
+import { QuestionTypes, IService, IServiceSearch } from "./serviceTemplate";
 
 class DeviantartSearch extends IServiceSearch {
     public authorID: string;
@@ -68,8 +69,7 @@ class DeviantartSearch extends IServiceSearch {
                 }
                 return el["media:content"][0].$;
             })
-            .filter((el) => !!el)
-            .filter((el) => el.medium === "image")
+            .filter((el) => el && el.medium === "image")
             .map((el) => el.url);
     }
 
@@ -117,7 +117,7 @@ const deviantart: IService = {
             {
                 message: "Enter link to user whose pictures you want to grab (like http://sandara.deviantart.com/):",
                 name: "link",
-                type: IQuestionTypes.input,
+                type: QuestionTypes.input,
                 validate(value) {
                     if (value.length && deviantart.validateLink(value)) {
                         return true;
@@ -126,14 +126,14 @@ const deviantart: IService = {
                 },
                 when: (answers) =>
                     answers.type === deviantart.serviceName && !answers.link,
-            } as IQuestion,
+            } as Question,
             {
                 message: "Do you want to grab unsafe pictures?",
                 name: "unsafe",
-                type: IQuestionTypes.confirm,
+                type: QuestionTypes.confirm,
                 when: (answers) =>
                     answers.type === deviantart.serviceName && answers.unsafe === undefined,
-            } as IQuestion,
+            } as Question,
         ],
     regExpLink: new RegExp(/(?:(?:http|https)(?::\/\/)|)(?:www.|)(.{1,})(?:.deviantart.com(?:\/|))(?:.*)/i),
     search: (link: string, options: any) => new DeviantartSearch(link, options),

@@ -1,26 +1,20 @@
 import * as bluebirdPromise from "bluebird";
 import { EventEmitter } from "events";
+import { Questions } from "inquirer";
+
 import { createDir, directoryExists } from "../util/functions";
 
-export enum IQuestionTypes {
+export enum QuestionTypes {
     list = "list",
     confirm = "confirm",
     input = "input",
     password = "password",
 }
 
-export interface IQuestion {
-    name: string;
-    type: IQuestionTypes;
-    message: any;
-    when?(answers: any): boolean;
-    validate?(input: string, hash: any): boolean;
-}
-
 export interface IService {
     serviceName: string;
     serviceLink: string;
-    questions: IQuestion[];
+    questions: Questions;
 
     regExpLink?: RegExp;
     validateLink?(link: string): boolean;
@@ -48,8 +42,9 @@ export abstract class IServiceSearch {
     public abstract async getImages(): Promise<string[]>;
     public abstract async downloadImage(url: string,  index: number): Promise<void>;
     public async downloadImages(): Promise<void> {
-        if (!directoryExists(this.filepath)) {
-            createDir(this.filepath);
+        const isDirExist = await directoryExists(this.filepath);
+        if (!isDirExist) {
+            await createDir(this.filepath);
         }
         bluebirdPromise
             .resolve(this.images)

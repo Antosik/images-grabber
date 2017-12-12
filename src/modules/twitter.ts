@@ -1,11 +1,12 @@
 import BigNumber from "bignumber.js";
 import * as cheerio from "cheerio";
 import co from "co";
+import { Question } from "inquirer";
 import { writeFileSync } from "fs";
 import { basename, extname } from "path";
 
 import { req, wait } from "../util/functions";
-import { IQuestion, IQuestionTypes, IService, IServiceSearch } from "./serviceTemplate";
+import { QuestionTypes, IService, IServiceSearch } from "./serviceTemplate";
 
 BigNumber.config({DECIMAL_PLACES: 40, ERRORS: false});
 
@@ -104,7 +105,7 @@ const twitter: IService = {
             {
                 message: "Enter link to user whose pictures you want to grab (like https://twitter.com/kamindani):",
                 name: "link",
-                type: IQuestionTypes.input,
+                type: QuestionTypes.input,
                 validate(value) {
                     if (value.length && twitter.validateLink(value)) {
                         return true;
@@ -113,14 +114,14 @@ const twitter: IService = {
                 },
                 when: (answers) =>
                     answers.type === twitter.serviceName && !answers.link,
-            } as IQuestion,
+            } as Question,
             {
                 message: "Do you want to grab unsafe pictures?",
                 name: "unsafe",
-                type: IQuestionTypes.confirm,
+                type: QuestionTypes.confirm,
                 when: (answers) =>
                     answers.type === twitter.serviceName && answers.unsafe === undefined,
-            } as IQuestion,
+            } as Question,
         ],
     regExpLink: new RegExp(/(?:(?:http|https)(?::\/\/)|)(?:www.|)(?:twitter.com\/)(\w{1,})/i),
     search: (link: string, options: any) => new TwitterSearch(link, options),

@@ -1,11 +1,12 @@
 import co from "co";
+import { Question } from "inquirer";
 import * as flattenDeep from "lodash.flattendeep";
 import { extname } from "path";
 import * as PixivApi from "pixiv-app-api";
 import * as pixivImg from "pixiv-img";
 
 import { wait } from "../util/functions";
-import { IQuestion, IQuestionTypes, IService, IServiceSearch } from "./serviceTemplate";
+import { QuestionTypes, IService, IServiceSearch } from "./serviceTemplate";
 
 class PixivSearch extends IServiceSearch {
     public authorID: string;
@@ -122,7 +123,7 @@ const pixiv: IService = {
                 // tslint:disable-next-line max-line-length
                 message: `Enter link to user whose pictures you want to grab (like https://www.pixiv.net/member_illust.php?id=6996493):`,
                 name: "link",
-                type: IQuestionTypes.input,
+                type: QuestionTypes.input,
                 validate: (value) => {
                     if (value.length && pixiv.validateLink(value)) {
                         return true;
@@ -131,35 +132,35 @@ const pixiv: IService = {
                 },
                 when: (answers) =>
                     answers.type === pixiv.serviceName && !answers.link,
-            } as IQuestion,
+            } as Question,
             {
                 message: "Do you want to grab pictures in \"collections\"?",
                 name: "all",
-                type: IQuestionTypes.confirm,
+                type: QuestionTypes.confirm,
                 when: (answers) =>
                     answers.type === pixiv.serviceName,
-            } as IQuestion,
+            } as Question,
             {
                 message: (answers) => (`Do you want to login as ${answers.pixivUsername}?`),
                 name: "pixivLoginAs",
-                type: IQuestionTypes.confirm,
+                type: QuestionTypes.confirm,
                 when: (answers) =>
                     answers.type === pixiv.serviceName && answers.pixivUsername && answers.pixivPassword,
-            } as IQuestion,
+            } as Question,
             {
                 message: "Enter your pixiv username:",
                 name: "pixivUsername",
-                type: IQuestionTypes.input,
+                type: QuestionTypes.input,
                 when: (answers) =>
                     answers.type === pixiv.serviceName && (!answers.pixivUsername || !answers.pixivLoginAs),
-            } as IQuestion,
+            } as Question,
             {
                 message: "Enter your pixiv password:",
                 name: "pixivPassword",
-                type: IQuestionTypes.password,
+                type: QuestionTypes.password,
                 when: (answers) =>
                     answers.type === pixiv.serviceName && (!answers.pixivPassword || !answers.pixivLoginAs),
-            } as IQuestion,
+            } as Question,
         ],
     regExpLink: new RegExp(/(?:(?:http|https)(?::\/\/)|)(?:www.|)(?:pixiv.net\/member(?:|_illust).php\?id=)(\d{1,})/i),
     search: (link: string, options: any) => new PixivSearch(link, options),
