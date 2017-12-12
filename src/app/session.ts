@@ -1,7 +1,9 @@
 import { Progress, Spinner } from "clui";
 import * as inquirer from "inquirer";
 import * as Preferences from "preferences";
+
 import { IQuestion, IService, IServiceSearch } from "../modules/serviceTemplate";
+import { search } from "src/modules/deviantart";
 
 const isWindows = /^win/.test(process.platform);
 
@@ -19,27 +21,46 @@ class AppSession {
     }
 
     public async start() {
+        // Get answers
         const answers = await this.renderQuestions();
+
+        // Run searcher & handle events
         const searcher = (this.getModuleSearch(answers.type))(answers.link, answers);
         this.handleSearcherEvents(searcher);
 
+        // Pictures searching UI
         process.stdout.write("  Searching for pictures...\n");
         this.spinner = new Spinner("Images found: 0");
         this.spinner.start();
-        await searcher.getImages();
+        try {
+            await searcher.getImages();
+        } catch {
+            searcher.images = [];
+            process.stderr.write(`  Got an error. Please write about it there → https://github.com/Antosik/images-grabber/issues`);
+        }
         this.spinner.stop();
         process.stdout.write(`  Found images in total: ${searcher.images.length}\n`);
         searcher.events.emit("findImages", searcher.images.length);
 
+        // Pictures downloading UI
         this.progress = new Progress(20);
         process.stdout.write("\n  Starting downloading pictures...\n");
-        await searcher.downloadImages();
+
+        try {
+            await searcher.downloadImages();
+        } catch {
+            process.stderr.write(`  Got an error. Please write about it there → https://github.com/Antosik/images-grabber/issues`);
+        }
     }
 
-    private async renderQuestions() {
-        const modulesQuestion = this.selectModulesValues();
+    /**
+     * Show questions (returns answers)
+     */
+    private async renderQuestions(): Promise<any> {
+        const modulesQuestion = this.getModulesNames();
         let answers = {...this.prefs, ...this.args};
 
+        // Show general questions
         const answerType = await inquirer.prompt([
             {
                 choices: modulesQuestion,
@@ -57,31 +78,51 @@ class AppSession {
         }
         answers = {...answerType, ...answers};
 
+        // Show module-related questions
         const answersModule = await inquirer.prompt(
             this.getModuleQuestions(answers.type), answers,
         );
+
         return {...answersModule, ...answers};
     }
 
-    private selectModulesValues() {
+    /**
+     * Get modules names (1st question)
+     */
+    private getModulesNames(): { name: string, value: string }[] {
         const moduleNames = [];
+
         for (const [name] of this.modules) {
             moduleNames.push({
                 name,
                 value: name,
             });
         }
+
         return moduleNames;
     }
 
+    /**
+     * Get questions of selected module
+     * @param moduleName Name of module
+     */
     private getModuleQuestions(moduleName: string): IQuestion[] {
         return this.modules.get(moduleName).questions;
     }
 
+
+    /**
+     * Get search class of selected module
+     * @param moduleName Name of module
+     */
     private getModuleSearch(moduleName: string) {
         return this.modules.get(moduleName).search;
     }
 
+    /**
+     * Handle events of searching/downloading
+     * @param searcher Search object
+     */
     private handleSearcherEvents(searcher: IServiceSearch) {
         const self = this;
 
