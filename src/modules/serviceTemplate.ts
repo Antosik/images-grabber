@@ -45,7 +45,20 @@ export abstract class IServiceSearch {
         if (!isDirExist) {
             await createDir(this.filepath);
         }
-        await Promise.all(this.images.map((url, i) => this.downloadImage(url, i)));
+
+        const self = this;
+        const imagesPerIteration = 25;
+        const iterationCount = Math.ceil(this.images.length / imagesPerIteration);
+        const iterationContainer = (new Array(iterationCount))
+            .fill([])
+            .map((_, i) =>
+                self.images.slice((i * imagesPerIteration), ((i + 1) * imagesPerIteration))
+            );
+
+        for (const [i, iteration] of iterationContainer.entries()) {
+            await Promise.all(iteration.map((url, index) => this.downloadImage(url, i * imagesPerIteration + index)));
+        }
+
         return;
     }
 }
