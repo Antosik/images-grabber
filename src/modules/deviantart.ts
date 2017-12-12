@@ -134,7 +134,7 @@ const deviantart: IService = {
                     answers.type === deviantart.serviceName && answers.unsafe === undefined,
             } as Question,
         ],
-    regExpLink: new RegExp(/(?:(?:http|https)(?::\/\/))?(?:www.)?(.{1,})(?:.deviantart.com(?:\/|))(?:.*)/i),
+    regExpLink: new RegExp(/(?:http[s]?:\/\/)?(?:www.)?(.{1,})(?:.deviantart.com)/i),
     search: (link: string, options: any) => new DeviantartSearch(link, options),
     serviceLink: "https://www.deviantart.com/",
     serviceName: "deviantart",
