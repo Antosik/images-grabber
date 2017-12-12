@@ -3,7 +3,6 @@ import * as inquirer from "inquirer";
 import * as Preferences from "preferences";
 
 import { IQuestion, IService, IServiceSearch } from "../modules/serviceTemplate";
-import { search } from "src/modules/deviantart";
 
 const isWindows = /^win/.test(process.platform);
 
