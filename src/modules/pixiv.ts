@@ -29,7 +29,7 @@ class PixivSearch extends IServiceSearch {
             await this.pixivApi.login(pixivUsername, pixivPassword);
             return true;
         } catch (e) {
-            this.events.emit("error", `Pixiv login errored: ${e}. Continue as guest.`);
+            this.events.emit("error", `Pixiv login errored. Trying to continue as guest.`);
             this.pixivApi = new PixivApi();
             return false;
         }
@@ -42,7 +42,8 @@ class PixivSearch extends IServiceSearch {
     public async getImages(): Promise<string[]> {
         const auth = await this.login();
         if (!auth) {
-            throw new Error("Account credentials need!");
+            this.events.emit("error", `Pixiv account credentials need! Register, or write valid credentials!`);
+            return [];
         }
         this.events.emit("successLogin", {
             password: this.options.pixivPassword,
@@ -71,6 +72,7 @@ class PixivSearch extends IServiceSearch {
             this.events.emit("error", `Image (${url}) downloading error: ${e}`);
         }
         await wait();
+
         this.events.emit("imageDownloaded", index);
     }
 
@@ -162,7 +164,7 @@ const pixiv: IService = {
                     answers.type === pixiv.serviceName && (!answers.pixivPassword || !answers.pixivLoginAs),
             } as Question,
         ],
-    regExpLink: new RegExp(/(?:(?:http|https)(?::\/\/)|)(?:www.|)(?:pixiv.net\/member(?:|_illust).php\?id=)(\d{1,})/i),
+    regExpLink: new RegExp(/(?:(?:http|https)(?::\/\/))?(?:www.)?(?:pixiv.net\/member(?:|_illust).php\?id=)?(\d{1,})/i),
     search: (link: string, options: any) => new PixivSearch(link, options),
     serviceLink: "https://pixiv.net",
     serviceName: "pixiv",

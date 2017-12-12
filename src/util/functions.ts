@@ -1,4 +1,4 @@
-import { mkdir, readdir, stat } from "fs";
+import { mkdir, readdir, stat, writeFile } from "fs";
 import * as got from "got";
 import { basename } from "path";
 import { promisify } from "util";
@@ -6,6 +6,7 @@ import { promisify } from "util";
 const mkdirAsync = promisify(mkdir);
 const readdirAsync = promisify(readdir);
 const statAsync = promisify(stat);
+const writeFileAsync = promisify(writeFile);
 
 const getCurrentDirectoryBase = () => basename(process.cwd());
 
@@ -38,6 +39,8 @@ const readDir = (dirPath: string): Promise<string[]> =>
     readdirAsync(dirPath)
         .catch(() => []);
 
+const writeBuffer = (name: string, data: Buffer) =>
+    writeFileAsync(name, data, "binary");
 
 const req = async (url: string, opt: any = {}) => {
     opt.headers = {
@@ -57,6 +60,7 @@ export {
     directoryExists,
     createDir,
     readDir,
+    writeBuffer,
     req,
     wait,
 };

@@ -77,6 +77,7 @@ class AppSession {
         }
         answers = {...answerType, ...answers};
 
+        console.log(answers);
         // Show module-related questions
         const answersModule = await inquirer.prompt(
             this.getModuleQuestions(answers.type), answers,
@@ -147,7 +148,7 @@ class AppSession {
         });
 
         searcher.events.on("error", (error) => {
-            process.stdout.write(`Error: ${error}\n`);
+            process.stdout.write(`  Error: ${error}\n`);
         });
     }
 }

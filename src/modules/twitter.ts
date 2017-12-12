@@ -5,7 +5,7 @@ import { Question } from "inquirer";
 import { writeFileSync } from "fs";
 import { basename, extname } from "path";
 
-import { req, wait } from "../util/functions";
+import { req, wait, writeBuffer } from "../util/functions";
 import { QuestionTypes, IService, IServiceSearch } from "./serviceTemplate";
 
 BigNumber.config({DECIMAL_PLACES: 40, ERRORS: false});
@@ -36,17 +36,16 @@ class TwitterSearch extends IServiceSearch {
      */
     public async downloadImage(url: string, index: number): Promise<void> {
         const file = `${this.filepath}/${index}${extname(url)}`;
-        try {
-            const data = await req(url, {encoding: null});  // tslint:disable-line no-null-keyword
-            writeFileSync(file, data, "binary");
-        } catch (e) {
-            this.events.emit("error", `Image (${url}) downloading error: ${e}`);
-        }
+
+        await req(url, {encoding: null})  // tslint:disable-line no-null-keyword
+            .then(data => writeBuffer(file, data))
+            .catch(e => this.events.emit("error", `Image (${url}) downloading error: ${e}`));
         await wait();
+
         this.events.emit("imageDownloaded", index);
     }
 
-    private mediaReq(param = "") {
+    private mediaReq(param: string = "") {
         return req(`https://twitter.com/i/profiles/show/${this.authorID}/media_timeline${param}`, {json: true})
             .catch((err) => {
                 this.events.emit("error", `    Twitter request error: ${err}`);
@@ -57,7 +56,7 @@ class TwitterSearch extends IServiceSearch {
             });
     }
 
-    private getMedia(html) {
+    private getMedia(html: string): string[] {
         const $ = cheerio.load(html);
         const {unsafe} = this.options;
 
@@ -72,7 +71,7 @@ class TwitterSearch extends IServiceSearch {
         }).get().filter((img) => !!img);
     }
 
-    private getParam(html) {
+    private getParam(html: string): string {
         const $ = cheerio.load(html);
         const cxtId = $(".tweet").last().data("tweet-id");
         const big = new BigNumber(cxtId);
@@ -123,7 +122,7 @@ const twitter: IService = {
                     answers.type === twitter.serviceName && answers.unsafe === undefined,
             } as Question,
         ],
-    regExpLink: new RegExp(/(?:(?:http|https)(?::\/\/)|)(?:www.|)(?:twitter.com\/)(\w{1,})/i),
+    regExpLink: new RegExp(/(?:(?:http|https)(?::\/\/))?(?:www.)?(?:twitter.com\/)(\w{1,})/i),
     search: (link: string, options: any) => new TwitterSearch(link, options),
     serviceLink: "https://twitter.com",
     serviceName: "twitter",

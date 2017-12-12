@@ -31,7 +31,7 @@ export abstract class IServiceSearch {
     public images: string[];
 
     public constructor(public data: string, options: any = { path: "images", all: true }) {
-        this.resource = data;
+        this.resource = data.trim();
         this.options = options;
         this.filepath = options.path || "images";
         this.events = new EventEmitter();
