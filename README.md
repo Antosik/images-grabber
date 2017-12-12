@@ -1,10 +1,9 @@
 # images-grabber
 [![Build Status](https://travis-ci.org/Antosik/images-grabber.svg?branch=master)](https://travis-ci.org/Antosik/images-grabber)
-[![Coverage Status](https://coveralls.io/repos/github/Antosik/images-grabber/badge.svg)](https://coveralls.io/github/Antosik/images-grabber)
 [![NSP Status](https://nodesecurity.io/orgs/antosik/projects/a71a0a22-f08d-4882-a708-727f91d20886/badge)](https://nodesecurity.io/orgs/antosik/projects/a71a0a22-f08d-4882-a708-727f91d20886)
+[![npm](https://img.shields.io/npm/dt/images-grabber.svg)](https://www.npmjs.com/package/images-grabber)
 
 [![NPM install](https://nodei.co/npm/images-grabber.png?mini=true)](https://www.npmjs.com/package/images-grabber)
-
 
 Download all images from pixiv/twitter/deviantart profiles!
 

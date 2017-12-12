@@ -1,11 +1,12 @@
-import co from 'co';
-import * as flattenDeep from 'lodash.flattendeep';
-import {extname} from 'path';
-import * as PixivApi from 'pixiv-app-api';
-import * as pixivImg from 'pixiv-img';
+import co from "co";
+import { Question } from "inquirer";
+import * as flattenDeep from "lodash.flattendeep";
+import { extname } from "path";
+import * as PixivApi from "pixiv-app-api";
+import * as pixivImg from "pixiv-img";
 
-import {wait} from '../util/functions';
-import {IQuestion, IQuestionTypes, IService, IServiceSearch} from './serviceTemplate';
+import { wait } from "../util/functions";
+import { QuestionTypes, IService, IServiceSearch } from "./serviceTemplate";
 
 class PixivSearch extends IServiceSearch {
     public authorID: string;
@@ -28,7 +29,7 @@ class PixivSearch extends IServiceSearch {
             await this.pixivApi.login(pixivUsername, pixivPassword);
             return true;
         } catch (e) {
-            this.events.emit('error', `Pixiv login errored: ${e}. Continue as guest.`);
+            this.events.emit("error", `Pixiv login errored. Trying to continue as guest.`);
             this.pixivApi = new PixivApi();
             return false;
         }
@@ -41,15 +42,16 @@ class PixivSearch extends IServiceSearch {
     public async getImages(): Promise<string[]> {
         const auth = await this.login();
         if (!auth) {
-            throw new Error('Account credentials need!');
+            this.events.emit("error", `Pixiv account credentials need! Register, or write valid credentials!`);
+            return [];
         }
-        this.events.emit('successLogin', {
+        this.events.emit("successLogin", {
             password: this.options.pixivPassword,
             username: this.options.pixivUsername,
         });
         const posts = await Promise.all([
-            co(this.getWorks('illust')),
-            co(this.getWorks('manga')),
+            co(this.getWorks("illust")),
+            co(this.getWorks("manga")),
         ]);
 
         this.images = flattenDeep(flattenDeep(posts).map((el) => this.getIllustrUrls(el, this.options.all)));
@@ -67,10 +69,11 @@ class PixivSearch extends IServiceSearch {
         try {
             await pixivImg(url, file);
         } catch (e) {
-            this.events.emit('error', `Image (${url}) downloading error: ${e}`);
+            this.events.emit("error", `Image (${url}) downloading error: ${e}`);
         }
         await wait();
-        this.events.emit('imageDownloaded', index);
+
+        this.events.emit("imageDownloaded", index);
     }
 
     /**
@@ -83,18 +86,18 @@ class PixivSearch extends IServiceSearch {
         try {
             json = yield this.pixivApi.userIllusts(this.authorID, {type});
         } catch (e) {
-            this.events.emit('error', `Pixiv request error: ${e}`);
+            this.events.emit("error", `Pixiv request error: ${e}`);
             json = {illusts: []};
         }
         let results = json.illusts.slice();
-        this.events.emit('findImages', results.length);
+        this.events.emit("findImages", results.length);
 
         while (this.pixivApi.hasNext()) {
             json = yield this.pixivApi.next();
             results = results.concat(json.illusts);
-            this.events.emit('findImages', results.length);
+            this.events.emit("findImages", results.length);
         }
-        this.events.emit('findImages', results.length);
+        this.events.emit("findImages", results.length);
 
         return results;
     }
@@ -121,51 +124,51 @@ const pixiv: IService = {
             {
                 // tslint:disable-next-line max-line-length
                 message: `Enter link to user whose pictures you want to grab (like https://www.pixiv.net/member_illust.php?id=6996493):`,
-                name: 'link',
-                type: IQuestionTypes.input,
+                name: "link",
+                type: QuestionTypes.input,
                 validate: (value) => {
                     if (value.length && pixiv.validateLink(value)) {
                         return true;
                     }
-                    return 'Please enter valid link';
+                    return "Please enter valid link";
                 },
                 when: (answers) =>
                     answers.type === pixiv.serviceName && !answers.link,
-            } as IQuestion,
+            } as Question,
             {
-                message: 'Do you want to grab pictures in "collections"?',
-                name: 'all',
-                type: IQuestionTypes.confirm,
+                message: "Do you want to grab pictures in \"collections\"?",
+                name: "all",
+                type: QuestionTypes.confirm,
                 when: (answers) =>
                     answers.type === pixiv.serviceName,
-            } as IQuestion,
+            } as Question,
             {
                 message: (answers) => (`Do you want to login as ${answers.pixivUsername}?`),
-                name: 'pixivLoginAs',
-                type: IQuestionTypes.confirm,
+                name: "pixivLoginAs",
+                type: QuestionTypes.confirm,
                 when: (answers) =>
                     answers.type === pixiv.serviceName && answers.pixivUsername && answers.pixivPassword,
-            } as IQuestion,
+            } as Question,
             {
-                message: 'Enter your pixiv username:',
-                name: 'pixivUsername',
-                type: IQuestionTypes.input,
+                message: "Enter your pixiv username:",
+                name: "pixivUsername",
+                type: QuestionTypes.input,
                 when: (answers) =>
                     answers.type === pixiv.serviceName && (!answers.pixivUsername || !answers.pixivLoginAs),
-            } as IQuestion,
+            } as Question,
             {
-                message: 'Enter your pixiv password:',
-                name: 'pixivPassword',
-                type: IQuestionTypes.password,
+                message: "Enter your pixiv password:",
+                name: "pixivPassword",
+                type: QuestionTypes.password,
                 when: (answers) =>
                     answers.type === pixiv.serviceName && (!answers.pixivPassword || !answers.pixivLoginAs),
-            } as IQuestion,
+            } as Question,
         ],
-    regExpLink: new RegExp(/(?:(?:http|https)(?::\/\/)|)(?:www.|)(?:pixiv.net\/member(?:|_illust).php\?id=)(\d{1,})/i),
+    regExpLink: new RegExp(/(?:http[s]?:\/\/)?(?:www.)?(?:pixiv.net\/member(?:_illust)?.php\?id=)(\d{1,})/i),
     search: (link: string, options: any) => new PixivSearch(link, options),
-    serviceLink: 'https://pixiv.net',
-    serviceName: 'pixiv',
+    serviceLink: "https://pixiv.net",
+    serviceName: "pixiv",
     validateLink: (link) => pixiv.regExpLink.test(link),
 };
 
-export default pixiv;
+export { pixiv as default, PixivSearch as search };

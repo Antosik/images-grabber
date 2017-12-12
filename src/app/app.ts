@@ -1,13 +1,18 @@
-import {readdirSync} from 'fs';
-import * as minimist from 'minimist';
-import {extname, resolve} from 'path';
-import {IService} from '../modules/serviceTemplate';
-import AppSession from './session';
+import * as minimist from "minimist";
+import { extname, resolve } from "path";
+
+import AppSession from "./session";
+import { IService } from "../modules/serviceTemplate";
+import { readDir } from "../util/functions";
 
 class App {
     public static modules: Map<string, IService>;
     public static session: AppSession;
 
+    /**
+     * Init main App
+     * @param argument CLI arguments
+     */
     public static async init(argument: string[]) {
         App.modules = new Map<string, IService>();
         await App.loadModules();
@@ -17,31 +22,42 @@ class App {
         App.session.start();
     }
 
+    /**
+     * Load modules
+     */
     private static async loadModules(): Promise<void> {
-        return readdirSync(resolve(__dirname, '../modules'))
-            .filter((file) => (extname(file) === '.js') && (file !== 'serviceTemplate.js'))
+        const moduleFiles = await readDir(resolve(__dirname, "../modules"));
+
+        return moduleFiles
+            .filter((file) => (extname(file) === ".js") && (file !== "serviceTemplate.js"))
             .forEach(async (file) => {
-                const module: IService = (await require(resolve(__dirname, '../modules', `./${file}`))).default;
-                App.modules.set(module.serviceName, module);
+                try {
+                    const module: IService = (await require(resolve(__dirname, "../modules", `./${file}`))).default;
+                    App.modules.set(module.serviceName, module);
+                } catch {}
             });
     }
 
+    /**
+     * Get parsed CLI arguments
+     * @param args CLI arguments
+     */
     private static getArgs(args: string[]): any {
         const parsedArgs = minimist(args, {
             alias: {
-                path: 'p',
-                unsafe: 'u',
+                path: "p",
+                unsafe: "u",
             },
-            boolean: ['unsafe'],
             default: {
-                path: 'images',
-                unsafe: false,
+                path: "images"
             },
-            string: ['path', 'username', 'pssword'],
+            string: ["path", "username", "password"],
         });
+
         if (parsedArgs._.length) {
-            let type = '';
+            let type = "";
             const link = parsedArgs._[0];
+
             App.modules.forEach((module) => {
                 if (module.validateLink(link)) {
                     type = module.serviceName;
