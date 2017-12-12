@@ -77,7 +77,6 @@ class AppSession {
         }
         answers = {...answerType, ...answers};
 
-        console.log(answers);
         // Show module-related questions
         const answersModule = await inquirer.prompt(
             this.getModuleQuestions(answers.type), answers,

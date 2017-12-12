@@ -48,13 +48,12 @@ class App {
                 path: "p",
                 unsafe: "u",
             },
-            boolean: ["unsafe"],
             default: {
-                path: "images",
-                unsafe: false,
+                path: "images"
             },
-            string: ["path", "username", "pssword"],
+            string: ["path", "username", "password"],
         });
+
         if (parsedArgs._.length) {
             let type = "";
             const link = parsedArgs._[0];
