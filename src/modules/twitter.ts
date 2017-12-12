@@ -122,7 +122,7 @@ const twitter: IService = {
                     answers.type === twitter.serviceName && answers.unsafe === undefined,
             } as Question,
         ],
-    regExpLink: new RegExp(/(?:http[s]?:\/\/)?(?:www.)?(?:twitter.com\/)?(\w{1,})/i),
+    regExpLink: new RegExp(/(?:http[s]?:\/\/)?(?:www.)?(?:twitter.com\/)(\w{1,})/i),
     search: (link: string, options: any) => new TwitterSearch(link, options),
     serviceLink: "https://twitter.com",
     serviceName: "twitter",

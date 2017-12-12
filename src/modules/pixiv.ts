@@ -164,7 +164,7 @@ const pixiv: IService = {
                     answers.type === pixiv.serviceName && (!answers.pixivPassword || !answers.pixivLoginAs),
             } as Question,
         ],
-    regExpLink: new RegExp(/(?:http[s]?:\/\/)?(?:www.)?(?:pixiv.net\/member(?:_illust)?.php\?id=)?(\d{1,})/i),
+    regExpLink: new RegExp(/(?:http[s]?:\/\/)?(?:www.)?(?:pixiv.net\/member(?:_illust)?.php\?id=)(\d{1,})/i),
     search: (link: string, options: any) => new PixivSearch(link, options),
     serviceLink: "https://pixiv.net",
     serviceName: "pixiv",
