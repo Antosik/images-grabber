@@ -1,6 +1,6 @@
 import { Progress, Spinner } from "clui";
 import * as inquirer from "inquirer";
-import * as Preferences from "preferences";
+import Preferences = require("preferences");
 
 import { IService, IServiceSearch } from "../modules/serviceTemplate";
 

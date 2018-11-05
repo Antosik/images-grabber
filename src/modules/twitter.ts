@@ -8,7 +8,7 @@ import { basename, extname } from "path";
 import { req, wait, writeBuffer } from "../util/functions";
 import { QuestionTypes, IService, IServiceSearch } from "./serviceTemplate";
 
-BigNumber.config({DECIMAL_PLACES: 40, ERRORS: false});
+BigNumber.config({DECIMAL_PLACES: 40});
 
 class TwitterSearch extends IServiceSearch {
     public authorID: string;
