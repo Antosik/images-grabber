@@ -4,7 +4,6 @@
     "semicolon": true,
     "object-curly-spacing": false,
     "quotemark": false,
-    "no-redundant-jsdoc": false,
     "no-console": false,
     "file-name-casing": false
   }

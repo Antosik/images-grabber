@@ -16,9 +16,9 @@ const getCurrentDirectoryBase = () => basename(process.cwd());
  * @returns {Promise<boolean>}
  */
 const directoryExists = (dirPath: string): Promise<boolean> =>
-    statAsync(dirPath)
-        .then(stats => stats.isDirectory())
-        .catch(() => false);
+  statAsync(dirPath)
+    .then(stats => stats.isDirectory())
+    .catch(() => false);
 
 /**
  * Creates directory
@@ -26,9 +26,9 @@ const directoryExists = (dirPath: string): Promise<boolean> =>
  * @returns {Promise<boolean>}
  */
 const createDir = (dirPath: string): Promise<boolean> =>
-    mkdirAsync(dirPath)
-        .then(() => true)
-        .catch(() => false);
+  mkdirAsync(dirPath)
+    .then(() => true)
+    .catch(() => false);
 
 /**
  * Load file names in directory
@@ -36,31 +36,31 @@ const createDir = (dirPath: string): Promise<boolean> =>
  * @returns {Promise<string[]>}
  */
 const readDir = (dirPath: string): Promise<string[]> =>
-    readdirAsync(dirPath)
-        .catch(() => []);
+  readdirAsync(dirPath).catch(() => []);
 
 const writeBuffer = (name: string, data: Buffer) =>
-    writeFileAsync(name, data, "binary");
+  writeFileAsync(name, data, "binary");
 
 const req = async (url: string, opt: any = {}) => {
-    opt.headers = {
-        "user-agent": "Mozilla/5.0 (Windows NT 6.3; WOW64; Trident/7.0; Touch; rv:11.0) like Gecko",
-    };
-    const res = await got(url, opt);
-    return res.body;
+  opt.headers = {
+    "user-agent":
+      "Mozilla/5.0 (Windows NT 6.3; WOW64; Trident/7.0; Touch; rv:11.0) like Gecko"
+  };
+  const res = await got(url, opt);
+  return res.body;
 };
 
 const wait = (time: number = 1000): Promise<void> =>
-    new Promise((resolve) => {
-        setTimeout(() => resolve(), time);
-    });
+  new Promise(resolve => {
+    setTimeout(() => resolve(), time);
+  });
 
 export {
-    getCurrentDirectoryBase,
-    directoryExists,
-    createDir,
-    readDir,
-    writeBuffer,
-    req,
-    wait,
+  getCurrentDirectoryBase,
+  directoryExists,
+  createDir,
+  readDir,
+  writeBuffer,
+  req,
+  wait
 };
