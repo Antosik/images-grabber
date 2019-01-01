@@ -2,7 +2,7 @@ import { EventEmitter } from "events";
 
 import { createDir, directoryExists } from "../util/functions";
 
-export default abstract class AbstractServiceSearch {
+export default abstract class AServiceSearch {
   public events: EventEmitter;
   public options: any;
 
@@ -12,22 +12,18 @@ export default abstract class AbstractServiceSearch {
     this.events = new EventEmitter();
   }
 
-  public abstract async login(
-    username: string,
-    password: string
-  ): Promise<boolean>;
-  public abstract async getImages(): Promise<string[]>;
-  public abstract async downloadImage(
-    url: string,
-    index: number
-  ): Promise<void>;
+  public abstract async getImages(source: string): Promise<string[]>;
 
-  public async downloadImages(images: string[]): Promise<void> {
+  public async downloadImages(source: string): Promise<void> {
+    const images = await this.getImages(source);
+
     const { path, imagesPerIteration } = this.options;
+    const sourceID = this.getSourceID(source) || "unnamed";
 
-    const isDirExist = await directoryExists(path);
+    const folderPath = `${path}/${sourceID}`;
+    const isDirExist = await directoryExists(folderPath);
     if (!isDirExist) {
-      await createDir(path);
+      await createDir(folderPath);
     }
 
     const iterationCount = Math.ceil(images.length / imagesPerIteration);
@@ -40,11 +36,24 @@ export default abstract class AbstractServiceSearch {
     for (const [i, iteration] of iterationContainer.entries()) {
       await Promise.all(
         iteration.map((url, index) =>
-          this.downloadImage(url, i * imagesPerIteration + index)
+          this.downloadImage(url, folderPath, i * imagesPerIteration + index)
         )
       );
     }
 
     return;
   }
+
+  protected abstract getSourceID(source: string): string | undefined;
+
+  protected abstract async login(
+    username: string,
+    password: string
+  ): Promise<boolean>;
+
+  protected abstract async downloadImage(
+    url: string,
+    path: string,
+    index: number
+  ): Promise<void>;
 }
