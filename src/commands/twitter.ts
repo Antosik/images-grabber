@@ -10,7 +10,6 @@ export default class TwitterCommand extends AServiceCommand {
   static flags = {
     ...AServiceCommand.flags,
     unsafe: flags.boolean({
-      char: "c",
       description: "Download unsafe pictures",
       default: false
     })
