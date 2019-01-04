@@ -1,42 +1,52 @@
 import co from "co";
-import { Question } from "inquirer";
 import { extname } from "path";
 import { promisify } from "util";
 import * as xml2js from "xml2js";
 
+import AServiceSearch from "../types/AServiceSearch";
 import { req, wait, writeBuffer } from "../util/functions";
-import { QuestionTypes, IService, IServiceSearch } from "./serviceTemplate";
 
-class DeviantartSearch extends IServiceSearch {
-  public authorID: string;
+class DeviantartSearch extends AServiceSearch {
   private parser: xml2js.Parser;
   private parseXML;
 
-  constructor(public data: string, options: any) {
-    super(data, options);
-    this.authorID = deviantart.regExpLink!.exec(this.resource)![1];
+  constructor(options) {
+    super(options);
     this.parser = new xml2js.Parser();
     this.parseXML = promisify(this.parser.parseString);
-    this.service = deviantart.serviceName;
   }
 
   /**
    * Gets links of images from author page
-   * @returns {Promise<string[]>}
+   * @returns links of images
    */
-  public async getImages(): Promise<string[]> {
-    this.images = await co(this.getIllusts());
-    return this.images;
+  public async getImages(source: string): Promise<string[]> {
+    if (!deviantartRegExp.test(source)) {
+      this.events.emit("error", `Invalid pixiv link`);
+      return [];
+    }
+
+    const authorID = this.getSourceID(source);
+    if (!authorID) {
+      this.events.emit("error", `Invalid pixiv link`);
+      return [];
+    }
+
+    return co(this.getIllusts(authorID));
   }
 
   /**
    * Downloads image from pixiv url
-   * @param {string} url
-   * @param {number} index
-   * @returns {Promise<void>}
+   * @param url Pixiv image url
+   * @param path Path to images folder
+   * @param index Index of image
    */
-  public async downloadImage(url: string, index: number): Promise<void> {
-    const file = `${this.filepath}/${index}${extname(url)}`;
+  public async downloadImage(
+    url: string,
+    path: string,
+    index: number
+  ): Promise<void> {
+    const file = `${path}/${index}${extname(url)}`;
 
     await req(url, { encoding: null }) // tslint:disable-line no-null-keyword
       .then(data => writeBuffer(file, data))
@@ -48,12 +58,21 @@ class DeviantartSearch extends IServiceSearch {
     this.events.emit("imageDownloaded", index);
   }
 
-  private mediaReq(offset = 0): Promise<string> {
-    // tslint:disable-next-line max-line-length
+  protected getSourceID(source: string): string | undefined {
+    const [, authorID] = deviantartRegExp.exec(source) || [
+      undefined,
+      undefined
+    ];
+    return authorID;
+  }
+
+  protected async login(): Promise<boolean> {
+    return Promise.resolve(true);
+  }
+
+  private mediaReq(authorID: string, offset = 0): Promise<string> {
     return req(
-      `http://backend.deviantart.com/rss.xml?type=deviation&q=by%3A${
-        this.authorID
-      }+sort%3Atime+meta%3Aall&offset=${offset}`
+      `https://backend.deviantart.com/rss.xml?type=deviation&q=by%3A${authorID}+sort%3Atime+meta%3Aall&offset=${offset}`
     ).catch(err => {
       this.events.emit("error", `DeviantArt request error: ${err}`);
       return "";
@@ -89,8 +108,8 @@ class DeviantartSearch extends IServiceSearch {
     return json.rss.channel[0].item.length;
   }
 
-  private async getPage(offset = 0) {
-    const xml = await this.mediaReq(offset);
+  private async getPage(authorID: string, offset = 0) {
+    const xml = await this.mediaReq(authorID, offset);
     const data = await this.parseXML(xml);
 
     const nextPage = this.hasNextPage(data);
@@ -100,14 +119,14 @@ class DeviantartSearch extends IServiceSearch {
     return { nextPage, count, images };
   }
 
-  private *getIllusts() {
-    let json = yield this.getPage();
+  private *getIllusts(authorID: string) {
+    let json = yield this.getPage(authorID);
     let count = json.count;
     let results = json.images;
     this.events.emit("findImages", results.length);
 
     while (json.nextPage) {
-      json = yield this.getPage(count);
+      json = yield this.getPage(authorID, count);
       count += json.count;
       results = results.concat(json.images);
       this.events.emit("findImages", results.length);
@@ -118,36 +137,7 @@ class DeviantartSearch extends IServiceSearch {
   }
 }
 
-const deviantart: IService = {
-  questions: [
-    {
-      message:
-        "Enter link to user whose pictures you want to grab (like http://sandara.deviantart.com/):",
-      name: "link",
-      type: QuestionTypes.input,
-      validate(value) {
-        if (value.length && deviantart.validateLink(value)) {
-          return true;
-        }
-        return "Please enter valid link";
-      },
-      when: answers => answers.type === deviantart.serviceName && !answers.link
-    } as Question,
-    {
-      message: "Do you want to grab unsafe pictures?",
-      name: "unsafe",
-      type: QuestionTypes.confirm,
-      when: answers =>
-        answers.type === deviantart.serviceName && answers.unsafe === undefined
-    } as Question
-  ],
-  regExpLink: new RegExp(
-    /(?:http[s]?:\/\/)?(?:www.)?(.{1,})(?:.deviantart.com)/i
-  ),
-  search: (link: string, options: any) => new DeviantartSearch(link, options),
-  serviceLink: "https://www.deviantart.com/",
-  serviceName: "deviantart",
-  validateLink: link => deviantart.regExpLink!.test(link)
-};
-
-export { deviantart as default, DeviantartSearch as search };
+export default DeviantartSearch;
+export const deviantartRegExp = new RegExp(
+  /(?:http[s]?:\/\/)?(?:www.)?(?:.deviantart.com)\/(.{1,})/i
+);
