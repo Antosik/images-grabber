@@ -1,4 +1,5 @@
 import { flags } from "@oclif/command";
+import chalk from "chalk";
 
 import TwitterSearch from "../modules/twitter";
 import AServiceCommand from "../types/AServiceCommand";
@@ -22,14 +23,15 @@ export default class TwitterCommand extends AServiceCommand {
     } = this.parse(TwitterCommand);
 
     if (argv.length) {
-      const search = new TwitterSearch({
+      const engine = new TwitterSearch({
         path,
         imagesPerIteration: iteration,
         unsafe
       });
 
-      for (const author of argv) {
-        await search.downloadImages(author);
+      for (const source of argv) {
+        console.log("\n" + chalk.blue(source));
+        await this.search(engine, source);
       }
     }
   }

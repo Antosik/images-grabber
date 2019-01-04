@@ -1,4 +1,5 @@
 import { flags } from "@oclif/command";
+import chalk from "chalk";
 
 import PixivSearch from "../modules/pixiv";
 import AServiceCommand from "../types/AServiceCommand";
@@ -33,7 +34,7 @@ export default class PixivCommand extends AServiceCommand {
     } = this.parse(PixivCommand);
 
     if (argv.length) {
-      const search = new PixivSearch({
+      const engine = new PixivSearch({
         path,
         username,
         password,
@@ -41,8 +42,9 @@ export default class PixivCommand extends AServiceCommand {
         imagesPerIteration: iteration
       });
 
-      for (const author of argv) {
-        await search.downloadImages(author);
+      for (const source of argv) {
+        console.log("\n" + chalk.blue(source));
+        await this.search(engine, source);
       }
     }
   }
