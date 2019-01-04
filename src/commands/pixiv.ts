@@ -3,7 +3,7 @@ import { flags } from "@oclif/command";
 import PixivSearch from "../modules/pixiv";
 import AServiceCommand from "../types/AServiceCommand";
 
-export default class Pixiv extends AServiceCommand {
+export default class PixivCommand extends AServiceCommand {
   static strict = false;
   static description = "Get image from pixiv (https://pixiv.net)";
 
@@ -30,7 +30,7 @@ export default class Pixiv extends AServiceCommand {
     const {
       argv,
       flags: { iteration, path, username, password, collections }
-    } = this.parse(Pixiv);
+    } = this.parse(PixivCommand);
 
     if (argv.length) {
       const search = new PixivSearch({

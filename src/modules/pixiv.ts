@@ -71,7 +71,8 @@ class PixivSearch extends AServiceSearch {
   protected async login(): Promise<boolean> {
     const { username, password } = this.options;
 
-    return this.pixivApi.login(username, password)
+    return this.pixivApi
+      .login(username, password)
       .then(() => true)
       .catch(() => false);
   }
@@ -100,7 +101,6 @@ class PixivSearch extends AServiceSearch {
 
   /**
    * Gets all posts by type from author profile pages
-   * @param Type of post
    * @returns IterableIterator with array of images
    */
   private *getWorks(

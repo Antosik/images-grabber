@@ -12,8 +12,8 @@ const getCurrentDirectoryBase = () => basename(process.cwd());
 
 /**
  * Checks, is directory exists
- * @param {string} dirPath directory path
- * @returns {Promise<boolean>}
+ * @param dirPath directory path
+ * @returns is directory exists
  */
 const directoryExists = (dirPath: string): Promise<boolean> =>
   statAsync(dirPath)
@@ -22,8 +22,8 @@ const directoryExists = (dirPath: string): Promise<boolean> =>
 
 /**
  * Creates directory
- * @param {string} dirPath directory path
- * @returns {Promise<boolean>}
+ * @param dirPath directory path
+ * @returns is directory created
  */
 const createDir = (dirPath: string): Promise<boolean> =>
   mkdirAsync(dirPath)
@@ -32,8 +32,8 @@ const createDir = (dirPath: string): Promise<boolean> =>
 
 /**
  * Load file names in directory
- * @param {string} dirPath directory path
- * @returns {Promise<string[]>}
+ * @param dirPath directory path
+ * @returns array of filenames
  */
 const readDir = (dirPath: string): Promise<string[]> =>
   readdirAsync(dirPath).catch(() => []);
@@ -50,7 +50,7 @@ const req = async (url: string, opt: any = {}) => {
   return res.body;
 };
 
-const wait = (time: number = 1000): Promise<void> =>
+const wait = (time = 1000): Promise<void> =>
   new Promise(resolve => {
     setTimeout(() => resolve(), time);
   });
