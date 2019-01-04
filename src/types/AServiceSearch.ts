@@ -14,9 +14,7 @@ export default abstract class AServiceSearch {
 
   public abstract async getImages(source: string): Promise<string[]>;
 
-  public async downloadImages(source: string): Promise<void> {
-    const images = await this.getImages(source);
-
+  public async downloadImages(source: string, images: string[] = []): Promise<void> {
     const { path, imagesPerIteration } = this.options;
     const sourceID = this.getSourceID(source) || "unnamed";
 
