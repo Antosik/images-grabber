@@ -34,7 +34,7 @@ class PixivSearch extends AServiceSearch {
     }
 
     if (!this.authorized) {
-      this.authorized = await this.login();
+      await this.login();
 
       if (!this.authorized) {
         this.events.emit(
@@ -73,8 +73,8 @@ class PixivSearch extends AServiceSearch {
 
     return this.pixivApi
       .login(username, password)
-      .then(() => true)
-      .catch(() => false);
+      .then(() => this.authorized = true)
+      .catch(() => this.authorized = false);
   }
 
   /**
