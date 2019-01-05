@@ -1,4 +1,4 @@
-import PixivSearch, { pixivRegExp } from "../../src/modules/pixiv";
+import { pixivRegExp, PixivSearch } from "../../src";
 
 test("init", () => {
   const search = new PixivSearch({});

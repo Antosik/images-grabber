@@ -1,6 +1,4 @@
-import DeviantartSearch, {
-  deviantartRegExp
-} from "../../src/modules/deviantart";
+import { deviantartRegExp, DeviantartSearch } from "../../src/";
 
 test("init", () => {
   const search = new DeviantartSearch({});

@@ -1,4 +1,4 @@
-import TwitterSearch, { twitterRegExp } from "../../src/modules/twitter";
+import { twitterRegExp, TwitterSearch } from "../../src";
 
 test("init", () => {
   const search = new TwitterSearch({});
