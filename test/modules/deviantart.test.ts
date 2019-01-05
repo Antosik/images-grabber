@@ -35,7 +35,7 @@ test("getting images", async () => {
   const images = await search.getImages("https://www.deviantart.com/kvacm");
   expect(Array.isArray(images)).toBeTruthy();
   expect(images.length).toBeGreaterThan(0);
-}, 30000);
+}, 60000);
 
 test("getting images failed", async () => {
   const search = new DeviantartSearch({});

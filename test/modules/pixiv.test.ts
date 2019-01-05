@@ -11,7 +11,7 @@ test("login", async () => {
   const search = new PixivSearch({});
   const authorized = await search.login();
   expect(authorized).toBeFalsy();
-});
+}, 60000);
 
 test("login with invalid credentials", async () => {
   const search = new PixivSearch({ username: "username", password: "password" });
@@ -41,7 +41,7 @@ test("getting images", async () => {
   const images = await search.getImages("https://www.pixiv.net/member_illust.php?id=10655554");
   expect(Array.isArray(images)).toBeTruthy();
   expect(images.length).toBeGreaterThan(0);
-}, 30000);
+}, 60000);
 
 test("getting images failed", async () => {
   const search = new PixivSearch({ username: process.env.PIXIV_USERNAME, password: process.env.PIXIV_PASSWORD });
