@@ -1,49 +1,72 @@
 # images-grabber
 [![Build Status](https://travis-ci.org/Antosik/images-grabber.svg?branch=master)](https://travis-ci.org/Antosik/images-grabber)
-[![NSP Status](https://nodesecurity.io/orgs/antosik/projects/a71a0a22-f08d-4882-a708-727f91d20886/badge)](https://nodesecurity.io/orgs/antosik/projects/a71a0a22-f08d-4882-a708-727f91d20886)
+[![NSP Status](https://snyk.io/test/github/Antosik/images-grabber/badge.svg?targetFile=package.json)](https://snyk.io/test/github/Antosik/images-grabber?targetFile=package.json)
 [![npm](https://img.shields.io/npm/dt/images-grabber.svg)](https://www.npmjs.com/package/images-grabber)
 
 [![NPM install](https://nodei.co/npm/images-grabber.png?mini=true)](https://www.npmjs.com/package/images-grabber)
 
 Download all images from pixiv/twitter/deviantart profiles!
 
-### How to run
-__Install__
+
+### Install
 * Install [node.js](https://nodejs.org/en/)
-* Run `npm install -g images-grabber` in console
-* Run in console `images-grabber`
+* Run `npm install -g images-grabber`
 
 
-__Usage__
+### Usage
 
-`$ img-grab <link>` or `$ images-grabber <link>`
- 
-__Options__
+```sh
+$ img-grab [service] [links] [arguments]
+``` 
+or 
+```sh
+$ images-grabber [service] [links] [arguments]
 ```
--p, --path   - directory to saved images (default - current directory + '/images')
--u, --unsafe  - download unsafe pictures (default - false)
  
---username and --password - if you want to download private pictures too
+### Services
+
+* [deviantart](http://www.deviantart.com/) (by user profile link)
+* [twitter](https://twitter.com/) (by user profile link) _(must be public!)_
+* [pixiv](https://www.pixiv.net/) (by user profile link)
+
+### Arguments
 ```
-__Example__
+-h, --help                    show service help
+-i [N], --iteration=[N]       number of images loaded per iteration (default: 25)
+-p [path], --path=[path]      path to images directory (default: path to current directory + "/images")
 
-`$ img-grab www.pixiv.net/member.php?id=420928 -p=C:/images`
+Deviantart and Twitter specific args:
+--unsafe                      download unsafe pictures (default: false)
 
+Pixiv specific args:
+-U [username], --username=[username]   pixiv username (required!)
+-P [password], --password=[password]   pixiv password (required!)
+-c, --collections                      download images in collections too
+```
 
-### Supported services
+### Example of usage
 
-* [DeviantArt](http://www.deviantart.com/) (by user profile link)
-* [Twitter](https://twitter.com/) (by user profile link) _(must be public!)_
-* [Pixiv](https://www.pixiv.net/) (by user profile link)
+* Get images from deviant art 
+```sh
+$ img-grab deviantart https://www.deviantart.coms/kvacm
+```
+* Get images from pixiv including images in collections
+```sh
+$ img-grab pixiv.net/member_illust.php?id=10655554 https://www.pixiv.net/member.php?id=810305 -c
+```
+* Get images from twitter (10 images per iteration)
+```sh
+$ img-grab twitter https://twitter.com/genskc -i 10
+```
 
 ### Sources install
 
 * Install [node.js](https://nodejs.org/en/)
 * Clone repo
 * Run `npm i` or `npm install`
-* After install, run `npm start`
+* After install, run `./bin/run [service] [links] [arguments]`
 
-#### Additional
-* [Build a JavaScript Command Line Interface (CLI) with Node.js](https://www.sitepoint.com/javascript-command-line-interface-cli-node-js/) from [sitepoint.com](https://www.sitepoint.com)
+### References
+* [The Open CLI Framework](https://oclif.io)
 * [node-twitter-media](https://github.com/tukiyururu/node-twitter-media) by [tukiyururu](https://github.com/tukiyururu)
 * [pixiv-app-api](https://github.com/akameco/pixiv-app-api) and [pixiv-img](https://github.com/akameco/pixiv-img) by [akameco](https://github.com/akameco)
