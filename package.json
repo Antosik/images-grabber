@@ -33,18 +33,14 @@
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.21.0",
-    "@oclif/test": "^1.2.2",
     "@oclif/tslint": "^3.1.1",
     "@types/got": "^9.3.0",
-    "@types/inquirer": "0.0.43",
     "@types/jest": "^23.3.11",
     "@types/listr": "^0.13.0",
-    "@types/minimist": "^1.2.0",
     "@types/node": "^10.12.18",
     "@types/xml2js": "^0.4.3",
     "globby": "^8.0.1",
     "jest": "^23.6.0",
-    "lec": "^1.0.1",
     "rimraf": "^2.6.3",
     "ts-jest": "^23.10.5",
     "ts-node": "^7.0.1",
@@ -75,9 +71,8 @@
     "build": "rimraf lib && tsc -b",
     "postpack": "rimraf oclif.manifest.json",
     "posttest": "tslint -p test -t stylish",
-    "prepack": "rimraf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
-    "test": "jest",
-    "version": "oclif-dev readme && git add README.md"
+    "prepack": "rimraf lib && tsc -b && oclif-dev manifest",
+    "test": "jest"
   },
   "types": "lib/index.d.ts"
 }
