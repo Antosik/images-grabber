@@ -60,8 +60,12 @@
     "lib"
   ],
   "oclif": {
-    "commands": "./lib/commands",
     "bin": "images-grabber",
+    "commands": "./lib/commands",
+    "hooks": {
+      "init": "./lib/hooks/init",
+      "command_not_found": "./lib/hooks/command_not_found"
+    },
     "plugins": [
       "@oclif/plugin-help"
     ]

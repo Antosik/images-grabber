@@ -9,13 +9,13 @@ export default abstract class AServiceCommand extends Command {
   static flags = {
     help: flags.help({ char: "h" }),
     path: flags.string({
-      char: "d",
-      description: "Directory where to save images",
+      char: "p",
+      description: "path to images directory",
       default: "./images"
     }),
     iteration: flags.integer({
       char: "i",
-      description: "Count of images downloading per iteration",
+      description: "number of images loaded per iteration",
       default: 25
     })
   };

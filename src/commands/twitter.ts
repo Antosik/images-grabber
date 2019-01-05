@@ -6,15 +6,24 @@ import AServiceCommand from "../types/AServiceCommand";
 
 export default class TwitterCommand extends AServiceCommand {
   static strict = false;
-  static description = "Get image from Twitter (https://twitter.com)";
+  static description = "get images from Twitter (https://twitter.com)";
 
   static flags = {
     ...AServiceCommand.flags,
     unsafe: flags.boolean({
-      description: "Download unsafe pictures",
+      description: "download unsafe pictures",
       default: false
     })
   };
+
+  static args = [
+    {
+      name: "sources",
+      required: true,
+      description:
+        "space separated image sources (links to author page, for example: https://twitter.com/genskc)"
+    }
+  ];
 
   async run() {
     const {
@@ -30,7 +39,7 @@ export default class TwitterCommand extends AServiceCommand {
       });
 
       for (const source of argv) {
-        console.log("\n" + chalk.blue(source));
+        this.log("\n" + chalk.blue(source));
         await this.search(engine, source);
       }
     }

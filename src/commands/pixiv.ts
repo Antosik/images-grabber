@@ -6,7 +6,7 @@ import AServiceCommand from "../types/AServiceCommand";
 
 export default class PixivCommand extends AServiceCommand {
   static strict = false;
-  static description = "Get image from pixiv (https://pixiv.net)";
+  static description = "get images from pixiv (https://pixiv.net)";
 
   static flags = {
     ...AServiceCommand.flags,
@@ -22,10 +22,19 @@ export default class PixivCommand extends AServiceCommand {
     }),
     collections: flags.boolean({
       char: "c",
-      description: "Download images in collections too",
+      description: "download images in collections too",
       default: false
     })
   };
+
+  static args = [
+    {
+      name: "sources",
+      required: true,
+      description:
+        "space separated image sources (links to author page, for example: https://www.pixiv.net/member_illust.php?id=10655554)"
+    }
+  ];
 
   async run() {
     const {
@@ -43,7 +52,7 @@ export default class PixivCommand extends AServiceCommand {
       });
 
       for (const source of argv) {
-        console.log("\n" + chalk.blue(source));
+        this.log("\n" + chalk.blue(source));
         await this.search(engine, source);
       }
     }
