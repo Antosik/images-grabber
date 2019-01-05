@@ -10,16 +10,15 @@ Download all images from pixiv/twitter/deviantart profiles!
 
 ### Install
 * Install [node.js](https://nodejs.org/en/)
-* Run `npm install -g images-grabber`
+* Run `npm install images-grabber -g`
 
 
 ### Usage
-
-```sh
+```sh-session
 $ img-grab [service] [links] [arguments]
 ``` 
 or 
-```sh
+```sh-session
 $ images-grabber [service] [links] [arguments]
 ```
  
@@ -30,17 +29,20 @@ $ images-grabber [service] [links] [arguments]
 * [pixiv](https://www.pixiv.net/) (by user profile link)
 
 ### Arguments
+#### General
 ```
 -h, --help                    show service help
--i [N], --iteration=[N]       number of images loaded per iteration (default: 25)
--p [path], --path=[path]      path to images directory (default: path to current directory + "/images")
-
-Deviantart and Twitter specific args:
+-i N, --iteration=N           number of images loaded per iteration (default: 25)
+-p path, --path=path          path to images directory (default: path to current directory + "/images")
+```
+#### Deviantart and Twitter specific args:
+```
 --unsafe                      download unsafe pictures (default: false)
-
-Pixiv specific args:
--U [username], --username=[username]   pixiv username (required!)
--P [password], --password=[password]   pixiv password (required!)
+```
+#### Pixiv specific args:
+```
+-U username, --username=username       pixiv username (required!)
+-P password, --password=password       pixiv password (required!)
 -c, --collections                      download images in collections too
 ```
 
@@ -52,7 +54,7 @@ $ img-grab deviantart https://www.deviantart.coms/kvacm
 ```
 * Get images from pixiv including images in collections
 ```sh
-$ img-grab pixiv.net/member_illust.php?id=10655554 https://www.pixiv.net/member.php?id=810305 -c
+$ img-grab pixiv pixiv.net/member_illust.php?id=10655554 https://www.pixiv.net/member.php?id=810305 -c
 ```
 * Get images from twitter (10 images per iteration)
 ```sh
