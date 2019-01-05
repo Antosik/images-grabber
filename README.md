@@ -50,7 +50,7 @@ $ images-grabber [service] [links] [arguments]
 
 * Get images from deviant art 
 ```sh
-$ img-grab deviantart https://www.deviantart.coms/kvacm
+$ img-grab deviantart https://www.deviantart.com/kvacm
 ```
 * Get images from pixiv including images in collections
 ```sh
