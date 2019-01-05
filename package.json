@@ -23,12 +23,9 @@
     "chalk": "^2.4.1",
     "cheerio": "^1.0.0-rc.2",
     "co": "^4.6.0",
-    "figlet": "^1.2.1",
     "got": "^9.5.0",
     "listr": "^0.14.3",
     "lodash.flattendeep": "^4.4.0",
-    "lodash.mergewith": "^4.6.1",
-    "lodash.union": "^4.6.0",
     "pixiv-app-api": "^0.11.1",
     "pixiv-img": "^0.3.1",
     "tslib": "^1.9.3",
@@ -46,7 +43,6 @@
     "@types/xml2js": "^0.4.3",
     "globby": "^8.0.1",
     "lec": "^1.0.1",
-    "nyc": "^13.1.0",
     "rimraf": "^2.6.3",
     "ts-node": "^7.0.1",
     "tslint": "^5.12.0",
@@ -73,7 +69,6 @@
     "postpack": "rimraf oclif.manifest.json",
     "posttest": "tslint -p test -t stylish",
     "prepack": "rimraf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
-    "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
     "version": "oclif-dev readme && git add README.md"
   },
   "types": "lib/index.d.ts"
