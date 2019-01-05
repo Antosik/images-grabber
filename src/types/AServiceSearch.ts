@@ -18,6 +18,11 @@ export default abstract class AServiceSearch {
     const { path, imagesPerIteration } = this.options;
     const sourceID = this.getSourceID(source) || "unnamed";
 
+    const isPathExist = await directoryExists(path);
+    if (!isPathExist) {
+      await createDir(path);
+    }
+
     const folderPath = `${path}/${sourceID}`;
     const isDirExist = await directoryExists(folderPath);
     if (!isDirExist) {
