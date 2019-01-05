@@ -40,12 +40,13 @@ export default abstract class AServiceCommand extends Command {
         title: "Downloading images",
         task: async (ctx, task) => {
           let total = 0;
-          engine.events.addListener("error", e => task.report(e));
+          engine.events.addListener("error", task.report);
           engine.events.addListener("imageDownloaded", () => {
             total += 1;
             task.output = `Downloaded ${total}/${ctx.images.length} images`;
           });
           await engine.downloadImages(source, ctx.images);
+          task.title = `Downloaded ${total}/${ctx.images.length} images`;
           engine.events.removeAllListeners();
           return Promise.resolve();
         }
