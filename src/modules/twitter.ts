@@ -1,7 +1,7 @@
 import BigNumber from "bignumber.js";
 import * as cheerio from "cheerio";
 import co from "co";
-import { basename, extname } from "path";
+import { extname } from "path";
 
 import AServiceSearch from "../types/AServiceSearch";
 import { req, wait, writeBuffer } from "../util/functions";
@@ -19,13 +19,13 @@ class TwitterSearch extends AServiceSearch {
    */
   public async getImages(source: string): Promise<string[]> {
     if (!twitterRegExp.test(source)) {
-      this.events.emit("error", `Invalid pixiv link`);
+      this.events.emit("error", `Invalid twitter link`);
       return [];
     }
 
     const authorID = this.getSourceID(source);
     if (!authorID) {
-      this.events.emit("error", `Invalid pixiv link`);
+      this.events.emit("error", `Invalid twitter link`);
       return [];
     }
     return co(this.getIllusts(authorID));
@@ -54,13 +54,13 @@ class TwitterSearch extends AServiceSearch {
     this.events.emit("imageDownloaded", index);
   }
 
+  public async login(): Promise<boolean> {
+    return Promise.resolve(true);
+  }
+
   protected getSourceID(source: string): string | undefined {
     const [, authorID] = twitterRegExp.exec(source) || [undefined, undefined];
     return authorID;
-  }
-
-  protected async login(): Promise<boolean> {
-    return Promise.resolve(true);
   }
 
   private mediaReq(authorID: string, param = "") {

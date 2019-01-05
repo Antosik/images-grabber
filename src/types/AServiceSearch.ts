@@ -42,12 +42,12 @@ export default abstract class AServiceSearch {
     return;
   }
 
-  protected abstract getSourceID(source: string): string | undefined;
-
-  protected abstract async login(
+  public abstract async login(
     username: string,
     password: string
   ): Promise<boolean>;
+
+  protected abstract getSourceID(source: string): string | undefined;
 
   protected abstract async downloadImage(
     url: string,

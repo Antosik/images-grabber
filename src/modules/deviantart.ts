@@ -7,8 +7,8 @@ import AServiceSearch from "../types/AServiceSearch";
 import { req, wait, writeBuffer } from "../util/functions";
 
 class DeviantartSearch extends AServiceSearch {
-  private parser: xml2js.Parser;
-  private parseXML;
+  private readonly parser: xml2js.Parser;
+  private readonly parseXML;
 
   constructor(options) {
     super(options);
@@ -22,13 +22,13 @@ class DeviantartSearch extends AServiceSearch {
    */
   public async getImages(source: string): Promise<string[]> {
     if (!deviantartRegExp.test(source)) {
-      this.events.emit("error", `Invalid pixiv link`);
+      this.events.emit("error", `Invalid deviantart link`);
       return [];
     }
 
     const authorID = this.getSourceID(source);
     if (!authorID) {
-      this.events.emit("error", `Invalid pixiv link`);
+      this.events.emit("error", `Invalid deviantart link`);
       return [];
     }
 
@@ -58,16 +58,16 @@ class DeviantartSearch extends AServiceSearch {
     this.events.emit("imageDownloaded", index);
   }
 
+  public async login(): Promise<boolean> {
+    return Promise.resolve(true);
+  }
+
   protected getSourceID(source: string): string | undefined {
     const [, authorID] = deviantartRegExp.exec(source) || [
       undefined,
       undefined
     ];
     return authorID;
-  }
-
-  protected async login(): Promise<boolean> {
-    return Promise.resolve(true);
   }
 
   private mediaReq(authorID: string, offset = 0): Promise<string> {

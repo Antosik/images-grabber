@@ -8,7 +8,7 @@ import AServiceSearch from "../types/AServiceSearch";
 import { wait } from "../util/functions";
 
 class PixivSearch extends AServiceSearch {
-  private pixivApi: PixivApi;
+  private readonly pixivApi: PixivApi;
   private authorized = false;
 
   constructor(options) {
@@ -59,22 +59,22 @@ class PixivSearch extends AServiceSearch {
     );
   }
 
-  protected getSourceID(source: string): string | undefined {
-    const [, authorID] = pixivRegExp.exec(source) || [undefined, undefined];
-    return authorID;
-  }
-
   /**
    * Login into pixiv
    * @returns Succesful login or not
    */
-  protected async login(): Promise<boolean> {
+  public async login(): Promise<boolean> {
     const { username, password } = this.options;
 
     return this.pixivApi
       .login(username, password)
-      .then(() => this.authorized = true)
-      .catch(() => this.authorized = false);
+      .then(() => (this.authorized = true))
+      .catch(() => (this.authorized = false));
+  }
+
+  protected getSourceID(source: string): string | undefined {
+    const [, authorID] = pixivRegExp.exec(source) || [undefined, undefined];
+    return authorID;
   }
 
   /**

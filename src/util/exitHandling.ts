@@ -24,7 +24,7 @@ if (isWindows) {
     output: process.stdout
   });
 
-  rl.on("SIGINT", function() {
+  rl.on("SIGINT", function () {
     process.exit(0);
   });
 }
