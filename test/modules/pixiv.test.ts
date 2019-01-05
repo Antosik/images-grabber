@@ -14,17 +14,17 @@ describe("pixiv tests", () => {
     const search = new PixivSearch({});
     const authorized = await search.login();
     expect(authorized).toBeFalsy();
-  });
+  }, 60000);
 
   describe("links", () => {
-    test("valid links", async () => {
+    test("valid links", () => {
       expect.assertions(1);
       expect(
         pixivRegExp.test("https://www.pixiv.net/member_illust.php?id=10655554")
       ).toBeTruthy();
     });
 
-    test("invalid links", async () => {
+    test("invalid links", () => {
       expect.assertions(4);
       expect(pixivRegExp.test("https://google.com")).toBeFalsy();
       expect(
@@ -45,7 +45,7 @@ describe("pixiv tests", () => {
       expect.assertions(1);
       const authorized = await search.login();
       expect(authorized).toBeFalsy();
-    });
+    }, 60000);
 
     test("getting images with valid link", async () => {
       expect.assertions(1);
@@ -56,7 +56,7 @@ describe("pixiv tests", () => {
       } catch (e) {
         expect(e.message).toMatch(/Pixiv account credentials need!/);
       }
-    }, 60000);
+    }, 120000);
 
     test("getting images with invalid link", async () => {
       expect.assertions(1);
@@ -89,7 +89,7 @@ describe("pixiv tests", () => {
       );
       expect(Array.isArray(images)).toBeTruthy();
       expect(images.length).toBeGreaterThan(0);
-    }, 60000);
+    }, 120000);
 
     test("getting images with invalid link", async () => {
       expect.assertions(1);
