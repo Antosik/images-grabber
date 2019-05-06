@@ -29,7 +29,8 @@
     "pixiv-app-api": "^0.11.1",
     "pixiv-img": "^0.3.1",
     "tslib": "^1.9.3",
-    "xml2js": "^0.4.19"
+    "xml2js": "^0.4.19",
+    "snyk": "^1.161.1"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.21.0",
@@ -73,12 +74,15 @@
     "postpack": "rimraf oclif.manifest.json",
     "posttest": "tslint -p test -t stylish",
     "prepack": "rimraf lib && tsc -b && oclif-dev manifest",
-    "test": "jest --runInBand"
+    "test": "jest --runInBand",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "husky": {
     "hooks": {
       "pre-push": "npm test"
     }
   },
-  "types": "lib/index.d.ts"
+  "types": "lib/index.d.ts",
+  "snyk": true
 }
