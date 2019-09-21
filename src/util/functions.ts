@@ -46,7 +46,7 @@ const req = async (url: string, opt: any = {}) => {
     "user-agent":
       "Mozilla/5.0 (Windows NT 6.3; WOW64; Trident/7.0; Touch; rv:11.0) like Gecko"
   };
-  const res = await got(url, opt);
+  const res = await got.get(url, opt);
   return res.body;
 };
 

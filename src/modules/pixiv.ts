@@ -1,8 +1,8 @@
 import co from "co";
-import * as flattenDeep from "lodash.flattendeep";
+import flattenDeep from "lodash.flattendeep";
 import { extname } from "path";
-import * as PixivApi from "pixiv-app-api";
-import * as pixivImg from "pixiv-img";
+import PixivApi from "pixiv-app-api";
+import pixivImg from "pixiv-img";
 
 import AServiceSearch from "../types/AServiceSearch";
 import { wait } from "../util/functions";
@@ -14,7 +14,7 @@ class PixivSearch extends AServiceSearch {
   constructor(options) {
     super(options);
 
-    this.pixivApi = new PixivApi();
+    this.pixivApi = new PixivApi('', '');
   }
 
   /**
@@ -106,10 +106,10 @@ class PixivSearch extends AServiceSearch {
   private *getWorks(
     authorID: string,
     type: string
-  ): IterableIterator<string[]> {
-    let json;
+  ): IterableIterator<any> {
+    let json: any;
     try {
-      json = yield this.pixivApi.userIllusts(authorID, { type });
+      json = yield this.pixivApi.userIllusts(authorID, { type }) as Promise<any>;
     } catch (e) {
       this.events.emit("error", `Pixiv request error: ${e}`);
       json = { illusts: [] };
@@ -137,10 +137,10 @@ class PixivSearch extends AServiceSearch {
     if (post.metaPages && post.metaPages.length > 0) {
       return all
         ? [].concat.apply(
-            post.metaPages.map(
-              img => img.imageUrls.original || img.imageUrls.large
-            )
+          post.metaPages.map(
+            img => img.imageUrls.original || img.imageUrls.large
           )
+        )
         : [post.metaPages[0].imageUrls.original];
     }
     return [post.metaSinglePage.originalImageUrl];
