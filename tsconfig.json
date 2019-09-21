@@ -4,15 +4,20 @@
     "declaration": true,
     "forceConsistentCasingInFileNames": true,
     "importHelpers": true,
+    "pretty": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+
     "module": "commonjs",
+    "target": "es2017",
+
     "noImplicitAny": false,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+
     "outDir": "./lib",
-    "pretty": true,
-    "rootDirs": ["./src"],
-    "strict": true,
-    "target": "es2017"
+    "rootDirs": ["./src"]
   },
   "include": ["./src/**/*"]
 }
