@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "composite": true,
     "declaration": true,
     "forceConsistentCasingInFileNames": true,
     "importHelpers": true,
@@ -17,7 +16,7 @@
     "noUnusedParameters": true,
 
     "outDir": "./lib",
-    "rootDirs": ["./src"]
+    "rootDir": "./src"
   },
   "include": ["./src/**/*"]
 }
