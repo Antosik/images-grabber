@@ -25,3 +25,5 @@ jobs:
         npm test
       env:
         CI: true
+        PIXIV_USERNAME: ${{ secrets.PIXIV_USERNAME }}
+        PIXIV_PASSWORD: ${{ secrets.PIXIV_PASSWORD }}
