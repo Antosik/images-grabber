@@ -53,8 +53,8 @@
   },
   "files": [
     "/bin",
-    "/oclif.manifest.json",
-    "lib"
+    "/lib",
+    "/oclif.manifest.json"
   ],
   "oclif": {
     "bin": "images-grabber",
@@ -69,10 +69,10 @@
   },
   "repository": "Antosik/images-grabber",
   "scripts": {
-    "build": "rimraf lib && tsc -b",
+    "build": "rimraf lib && tsc",
     "postpack": "rimraf oclif.manifest.json",
     "posttest": "tslint -p test -t stylish",
-    "prepack": "rimraf lib && tsc -b && oclif-dev manifest",
+    "prepack": "oclif-dev manifest",
     "test": "jest --runInBand"
   },
   "husky": {
