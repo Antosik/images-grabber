@@ -44,7 +44,7 @@ class TwitterSearch extends AServiceSearch {
   ): Promise<void> {
     const file = `${path}/${index}${extname(url)}`;
 
-    await req(url, { encoding: null }) // tslint:disable-line no-null-keyword
+    await req(`${url}:orig`, { encoding: null }) // tslint:disable-line no-null-keyword
       .then(data => writeBuffer(file, data))
       .catch(e =>
         this.events.emit("error", `Image (${url}) downloading error: ${e}`)
