@@ -2,6 +2,7 @@ import BigNumber from "bignumber.js";
 import * as cheerio from "cheerio";
 import co from "co";
 import { extname } from "path";
+import { URL } from "url";
 
 import AServiceSearch from "../types/AServiceSearch";
 import { req, wait, writeBuffer } from "../util/functions";
@@ -42,9 +43,10 @@ class TwitterSearch extends AServiceSearch {
     path: string,
     index: number
   ): Promise<void> {
-    const file = `${path}/${index}${extname(url)}`;
+    const pathname = new URL(url).pathname;
+    const file = `${path}/${index}${extname(pathname)}`;
 
-    await req(url, { encoding: null }) // tslint:disable-line no-null-keyword
+    await req(`${url}:orig`, { encoding: null }) // tslint:disable-line no-null-keyword
       .then(data => writeBuffer(file, data))
       .catch(e =>
         this.events.emit("error", `Image (${url}) downloading error: ${e}`)
