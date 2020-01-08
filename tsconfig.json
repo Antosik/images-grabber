@@ -7,7 +7,6 @@
     "strict": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true,
 
     "module": "commonjs",
     "target": "es2017",

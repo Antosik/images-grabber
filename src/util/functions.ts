@@ -3,8 +3,7 @@ import * as got from "got";
 import { basename } from "path";
 import { promisify } from "util";
 
-// @ts-ignore
-import { homepage, name, version } from '../../package.json';
+const pkg = require('../../package.json');
 
 const mkdirAsync = promisify(mkdir);
 const readdirAsync = promisify(readdir);
@@ -46,7 +45,7 @@ const writeBuffer = (name: string, data: Buffer) =>
 
 const req = async (url: string, opt: any = {}) => {
   opt.headers = {
-    "user-agent": `${name}/${version} (+${homepage})`
+    "user-agent": `${pkg.name}/${pkg.version} (+${pkg.homepage})`
   };
   const res = await got.get(url, opt);
   return res.body;
