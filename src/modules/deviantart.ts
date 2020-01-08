@@ -1,5 +1,6 @@
 import co from "co";
 import { extname } from "path";
+import { URL } from "url";
 import { promisify } from "util";
 import * as xml2js from "xml2js";
 
@@ -46,7 +47,8 @@ class DeviantartSearch extends AServiceSearch {
     path: string,
     index: number
   ): Promise<void> {
-    const file = `${path}/${index}${extname(url)}`;
+    const pathname = new URL(url).pathname;
+    const file = `${path}/${index}${extname(pathname)}`;
 
     await req(url, { encoding: null }) // tslint:disable-line no-null-keyword
       .then(data => writeBuffer(file, data))

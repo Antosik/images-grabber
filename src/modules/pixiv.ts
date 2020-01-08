@@ -3,6 +3,7 @@ import flattenDeep from "lodash.flattendeep";
 import { extname } from "path";
 import PixivApi from "pixiv-app-api";
 import pixivImg from "pixiv-img";
+import { URL } from "url";
 
 import AServiceSearch from "../types/AServiceSearch";
 import { wait } from "../util/functions";
@@ -27,7 +28,7 @@ class PixivSearch extends AServiceSearch {
       return [];
     }
 
-    const authorID = this.getSourceID(source);
+    const authorID = Number(this.getSourceID(source));
     if (!authorID) {
       this.events.emit("error", `Invalid pixiv link`);
       return [];
@@ -88,7 +89,9 @@ class PixivSearch extends AServiceSearch {
     path: string,
     index: number
   ): Promise<void> {
-    const file = `${path}/${index}${extname(url)}`;
+    const pathname = new URL(url).pathname;
+    const file = `${path}/${index}${extname(pathname)}`;
+
     try {
       await pixivImg(url, file);
     } catch (e) {
@@ -104,7 +107,7 @@ class PixivSearch extends AServiceSearch {
    * @returns IterableIterator with array of images
    */
   private *getWorks(
-    authorID: string,
+    authorID: number,
     type: string
   ): IterableIterator<any> {
     let json: any;
