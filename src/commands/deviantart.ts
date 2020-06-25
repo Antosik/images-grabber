@@ -31,7 +31,7 @@ export default class DeviantArtCommand extends AServiceCommand {
       flags: { iteration, path, unsafe }
     } = this.parse(DeviantArtCommand);
 
-    if (argv.length) {
+    if (argv.length !== 0) {
       const engine = new DeviantArtSearch({
         path,
         imagesPerIteration: iteration,

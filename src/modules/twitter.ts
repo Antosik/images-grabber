@@ -1,5 +1,3 @@
-import BigNumber from "bignumber.js";
-import * as cheerio from "cheerio";
 import co from "co";
 import { extname } from "path";
 import { URL } from "url";
@@ -7,11 +5,16 @@ import { URL } from "url";
 import AServiceSearch from "../types/AServiceSearch";
 import { req, wait, writeBuffer } from "../util/functions";
 
-BigNumber.config({ DECIMAL_PLACES: 40 });
-
 class TwitterSearch extends AServiceSearch {
+  private guest_token = '';
+  private readonly auth_token = "AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA";
+
   constructor(options: any) {
     super(options);
+  }
+
+  private get authorized(): boolean {
+    return this.guest_token !== '';
   }
 
   /**
@@ -29,7 +32,30 @@ class TwitterSearch extends AServiceSearch {
       this.events.emit("error", `Invalid twitter link`);
       return [];
     }
-    return co(this.getIllusts(authorID));
+
+    if (!this.authorized) {
+      await this.login();
+
+      if (!this.authorized) {
+        this.events.emit(
+          "error",
+          `Twitter search errorred!`
+        );
+        return [];
+      }
+    }
+
+    const authorTwitterID = await this.getSourceTwitterID(authorID);
+
+    if (authorTwitterID === undefined) {
+      this.events.emit(
+        "error",
+        `Twitter search errorred!`
+      );
+      return [];
+    }
+
+    return co(this.getIllusts(authorTwitterID));
   }
 
   /**
@@ -38,16 +64,12 @@ class TwitterSearch extends AServiceSearch {
    * @param path Path to images folder
    * @param index Index of image
    */
-  public async downloadImage(
-    url: string,
-    path: string,
-    index: number
-  ): Promise<void> {
+  public async downloadImage(url: string, path: string, index: number): Promise<void> {
     const pathname = new URL(url).pathname;
     const file = `${path}/${index}${extname(pathname)}`;
 
-    await req(`${url}:orig`, { encoding: null }) // tslint:disable-line no-null-keyword
-      .then(data => writeBuffer(file, data))
+    await req(`${url}:orig`, { responseType: "arraybuffer" })
+      .then(({ data }) => writeBuffer(file, data))
       .catch(e =>
         this.events.emit("error", `Image (${url}) downloading error: ${e}`)
       );
@@ -57,7 +79,20 @@ class TwitterSearch extends AServiceSearch {
   }
 
   public async login(): Promise<boolean> {
-    return Promise.resolve(true);
+    const response = await req("https://twitter.com/twitter");
+    const gt_cookie = response.headers['set-cookie']?.find(cookie => cookie.includes('gt='));
+
+    if (gt_cookie !== undefined) {
+      const regexpresult = /gt=(\d+)/.exec(gt_cookie);
+
+      if (regexpresult !== null && !Number.isNaN(Number(regexpresult[1]))) {
+        this.guest_token = regexpresult[1];
+
+        return true;
+      }
+    }
+
+    return false;
   }
 
   protected getSourceID(source: string): string | undefined {
@@ -65,58 +100,96 @@ class TwitterSearch extends AServiceSearch {
     return authorID;
   }
 
-  private mediaReq(authorID: string, param = "") {
-    return req(
-      `https://twitter.com/i/profiles/show/${authorID}/media_timeline${param}`,
-      { json: true }
-    ).catch(err => {
-      this.events.emit("error", `    Twitter request error: ${err}`);
-      return {
-        has_more_items: false,
-        items_html: ""
-      };
+  private async getSourceTwitterID(authorID: string): Promise<string | undefined> {
+    const params = encodeURIComponent(JSON.stringify({ screen_name: authorID, withHighlightedLabel: true }));
+    const url = `https://api.twitter.com/graphql/-xfUfZsnR_zqjFd-IfrN5A/UserByScreenName?variables=${params}`;
+
+    const { data } = await req(url, {
+      headers: {
+        authorization: `Bearer ${this.auth_token}`
+      }
     });
+
+    return data?.data?.user?.rest_id;
   }
 
-  private getMedia(html: string): string[] {
-    const $ = cheerio.load(html);
-    const { unsafe } = this.options;
+  private async mediaReq(authorTwitterID: string, cursor = ""): Promise<Record<string, any>> {
+    return req(
+      `https://api.twitter.com/2/timeline/media/${authorTwitterID}.json?${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`,
+      {
+        headers: {
+          authorization: `Bearer ${this.auth_token}`,
+          'x-guest-token': this.guest_token
+        },
+      }
+    )
+      .then(({ data }) => data)
+      .catch(err => {
+        this.events.emit("error", `    Twitter request error: ${err}`);
+        return {};
+      });
+  }
 
-    return $(".AdaptiveMedia-photoContainer")
-      .map((_, el) => {
-        if ($(this).closest("[data-possibly-sensitive=true]").length) {
-          if (unsafe) {
-            return $(el).data("image-url");
-          }
-          return null;
+  private getMedia(json: Record<string, any>): string[] {
+    const tweets = json?.globalObjects?.tweets ?? {};
+
+    const results: string[] = [];
+
+    for (const tweet of Object.values<Record<string, any>>(tweets)) {
+      if (tweet?.possibly_sensitive === true && !this.options.unsafe) {
+        continue;
+      }
+
+      const media = tweet?.entities?.media ?? [];
+
+      for (const item of media) {
+        if (item?.media_url_https !== undefined) {
+          results.push(item.media_url_https);
+        } else if (item?.media_url !== undefined) {
+          results.push(item.media_url);
         }
-        return $(el).data("image-url");
-      })
-      .get()
-      .filter(img => !!img);
+      }
+    }
+
+    return results;
   }
 
-  private getParam(html: string): string {
-    const $ = cheerio.load(html);
-    const cxtId = $(".tweet")
-      .last()
-      .data("tweet-id");
-    const big = new BigNumber(cxtId);
-    const maxId = big.minus(1).toFixed(0);
+  private getCursor(json: Record<string, any>): string | undefined {
+    const instructions: Array<Record<string, any>> = json?.timeline?.instructions ?? [];
+    if (instructions.length === 0) {
+      return;
+    }
 
-    return `?last_note_ts=${cxtId}&max_position=${maxId}`;
+    const entries: Array<Record<string, any>> = instructions.find(el => "addEntries" in el)?.addEntries?.entries ?? [];
+    if (entries.length === 0) {
+      return;
+    }
+
+    const cursorEntry = entries.find(entry => entry?.content?.operation?.cursor?.cursorType === "Bottom");
+    return cursorEntry?.content?.operation?.cursor?.value;
   }
 
-  private *getIllusts(authorID: string) {
-    let json = yield this.mediaReq(authorID);
-    let html = json.items_html;
-    let results = this.getMedia(html);
+  private *getIllusts(authorTwitterID: string) {
+    let results: string[] = [];
+
+    let json = yield this.mediaReq(authorTwitterID);
+    let images = this.getMedia(json);
+
+    let cursor = this.getCursor(json);
+    let prevCursor;
+
+    results = results.concat(images);
     this.events.emit("findImages", results.length);
 
-    while (json.has_more_items) {
-      json = yield this.mediaReq(authorID, this.getParam(html));
-      html = json.items_html;
-      results = results.concat(this.getMedia(html));
+    while (cursor !== prevCursor) {
+      json = yield this.mediaReq(authorTwitterID, cursor);
+      images = this.getMedia(json);
+
+      prevCursor = cursor;
+      cursor = this.getCursor(json);
+
+      results = results.concat(images);
+
       this.events.emit("findImages", results.length);
     }
     this.events.emit("findImages", results.length);

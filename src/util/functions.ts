@@ -1,5 +1,5 @@
+import axios, { AxiosRequestConfig } from "axios";
 import { mkdir, readdir, stat, writeFile } from "fs";
-import * as got from "got";
 import { basename } from "path";
 import { promisify } from "util";
 
@@ -17,7 +17,7 @@ const getCurrentDirectoryBase = () => basename(process.cwd());
  * @param dirPath directory path
  * @returns is directory exists
  */
-const directoryExists = (dirPath: string): Promise<boolean> =>
+const directoryExists = async (dirPath: string): Promise<boolean> =>
   statAsync(dirPath)
     .then(stats => stats.isDirectory())
     .catch(() => false);
@@ -27,7 +27,7 @@ const directoryExists = (dirPath: string): Promise<boolean> =>
  * @param dirPath directory path
  * @returns is directory created
  */
-const createDir = (dirPath: string): Promise<boolean> =>
+const createDir = async (dirPath: string): Promise<boolean> =>
   mkdirAsync(dirPath)
     .then(() => true)
     .catch(() => false);
@@ -37,18 +37,18 @@ const createDir = (dirPath: string): Promise<boolean> =>
  * @param dirPath directory path
  * @returns array of filenames
  */
-const readDir = (dirPath: string): Promise<string[]> =>
+const readDir = async (dirPath: string): Promise<string[]> =>
   readdirAsync(dirPath).catch(() => []);
 
-const writeBuffer = (name: string, data: Buffer) =>
+const writeBuffer = async (name: string, data: Buffer) =>
   writeFileAsync(name, data, "binary");
 
-const req = async (url: string, opt: any = {}) => {
+const req = async (url: string, opt: AxiosRequestConfig = {}) => {
   opt.headers = {
-    "user-agent": `${pkg.name}/${pkg.version} (+${pkg.homepage})`
+    "user-agent": `${pkg.name}/${pkg.version} (+${pkg.homepage})`,
+    ...opt.headers
   };
-  const res = await got.get(url, opt);
-  return res.body;
+  return axios(url, opt);
 };
 
 const wait = (time = 1000): Promise<void> =>

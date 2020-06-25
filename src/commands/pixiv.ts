@@ -42,7 +42,7 @@ export default class PixivCommand extends AServiceCommand {
       flags: { iteration, path, username, password, collections }
     } = this.parse(PixivCommand);
 
-    if (argv.length) {
+    if (argv.length !== 0) {
       const engine = new PixivSearch({
         path,
         username,

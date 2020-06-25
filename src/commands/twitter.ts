@@ -31,7 +31,7 @@ export default class TwitterCommand extends AServiceCommand {
       flags: { iteration, path, unsafe }
     } = this.parse(TwitterCommand);
 
-    if (argv.length) {
+    if (argv.length !== 0) {
       const engine = new TwitterSearch({
         path,
         imagesPerIteration: iteration,

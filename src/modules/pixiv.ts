@@ -56,7 +56,7 @@ class PixivSearch extends AServiceSearch {
     ]);
 
     return flattenDeep(
-      flattenDeep(posts).map(el => this.getIllustrUrls(el, this.options.all))
+      flattenDeep(posts).map(el => this.getIllustrUrls(el, this.options.all)).filter(Boolean)
     );
   }
 
@@ -84,11 +84,7 @@ class PixivSearch extends AServiceSearch {
    * @param path Path to images folder
    * @param index Index of image
    */
-  protected async downloadImage(
-    url: string,
-    path: string,
-    index: number
-  ): Promise<void> {
+  protected async downloadImage(url: string, path: string, index: number): Promise<void> {
     const pathname = new URL(url).pathname;
     const file = `${path}/${index}${extname(pathname)}`;
 
@@ -106,27 +102,27 @@ class PixivSearch extends AServiceSearch {
    * Gets all posts by type from author profile pages
    * @returns IterableIterator with array of images
    */
-  private *getWorks(
-    authorID: number,
-    type: string
-  ): IterableIterator<any> {
+  private *getWorks(authorID: number, type: string): IterableIterator<any> {
     let json: any;
+
     try {
       json = yield this.pixivApi.userIllusts(authorID, { type }) as Promise<any>;
     } catch (e) {
       this.events.emit("error", `Pixiv request error: ${e}`);
       json = { illusts: [] };
     }
+
     let results = json.illusts.slice();
     this.events.emit("findImages", results.length);
 
     while (this.pixivApi.hasNext()) {
       json = yield this.pixivApi.next();
       results = results.concat(json.illusts);
+
       this.events.emit("findImages", results.length);
     }
-    this.events.emit("findImages", results.length);
 
+    this.events.emit("findImages", results.length);
     return results;
   }
 
@@ -141,12 +137,13 @@ class PixivSearch extends AServiceSearch {
       return all
         ? [].concat.apply(
           post.metaPages.map(
-            img => img.imageUrls.original || img.imageUrls.large
+            img => img?.imageUrls?.original || img?.imageUrls?.large
           )
         )
-        : [post.metaPages[0].imageUrls.original];
+        : [post?.metaPages[0]?.imageUrls?.original];
     }
-    return [post.metaSinglePage.originalImageUrl];
+
+    return [post?.metaSinglePage?.originalImageUrl];
   }
 }
 
