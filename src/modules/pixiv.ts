@@ -23,15 +23,17 @@ class PixivSearch extends AServiceSearch {
    * @returns Array with images links
    */
   public async getImages(source: string): Promise<string[]> {
+    let posts = [];
+
     if (!pixivRegExp.test(source)) {
       this.events.emit("error", `Invalid pixiv link`);
-      return [];
+      return posts;
     }
 
-    const authorID = Number(this.getSourceID(source));
-    if (!authorID) {
+    const [sourceType, sourceID] = this.getSource(source);
+    if (!sourceID) {
       this.events.emit("error", `Invalid pixiv link`);
-      return [];
+      return posts;
     }
 
     if (!this.authorized) {
@@ -42,7 +44,7 @@ class PixivSearch extends AServiceSearch {
           "error",
           `Pixiv account credentials need! Register, or enter valid credentials!`
         );
-        return [];
+        return posts;
       }
     }
     this.events.emit("successLogin", {
@@ -50,10 +52,26 @@ class PixivSearch extends AServiceSearch {
       password: this.options.password
     });
 
-    const posts = await Promise.all([
-      co(this.getWorks(authorID, "illust")),
-      co(this.getWorks(authorID, "manga"))
-    ]);
+    switch (sourceType) {
+      case 'artworks': {
+        posts = await this.getWork(sourceID);
+        break;
+      }
+      case 'users': {
+        posts = await Promise.all([
+          co(this.getWorks(sourceID, "illust")),
+          co(this.getWorks(sourceID, "manga"))
+        ]);
+        break;
+      }
+      default: {
+        this.events.emit(
+          "error",
+          `Unsupported source type ${sourceType}`
+        );
+        return posts;
+      }
+    }
 
     return flattenDeep(
       flattenDeep(posts).map(el => this.getIllustrUrls(el, this.options.all)).filter(Boolean)
@@ -73,9 +91,16 @@ class PixivSearch extends AServiceSearch {
       .catch(() => (this.authorized = false));
   }
 
+  protected getSource(source: string): [?string, ?number] {
+    const [sourceType, sourceID] = pixivRegExp.exec(source) || [undefined, undefined];
+
+    return [sourceType, Number(sourceID)];
+  }
+
   protected getSourceID(source: string): string | undefined {
-    const [, authorID] = pixivRegExp.exec(source) || [undefined, undefined];
-    return authorID;
+    const [_, sourceID] = pixivRegExp.exec(source) || [undefined, undefined];
+
+    return sourceID;
   }
 
   /**
@@ -96,6 +121,26 @@ class PixivSearch extends AServiceSearch {
     await wait();
 
     this.events.emit("imageDownloaded", index);
+  }
+
+  /**
+   * Gets post from its page
+   * @returns Promise with array of one image
+   */
+  private getWork(artworkID: number): Promise<any> {
+    let json: any;
+
+    try {
+      json = yield this.pixivApi.illustDetail(artworkID) as Promise<any>;
+    } catch (e) {
+      this.events.emit("error", `Pixiv request error: ${e}`);
+      json = { illust: null };
+    }
+
+    let results = [json.illust];
+    this.events.emit("findImages", results.length);
+
+    return results;
   }
 
   /**
@@ -149,5 +194,5 @@ class PixivSearch extends AServiceSearch {
 
 export default PixivSearch;
 export const pixivRegExp = new RegExp(
-  /(?:http[s]?:\/\/)?(?:www.)?(?:pixiv.net\/member(?:_illust)?.php\?id=)(\d{1,})/i
+  /(?:http[s]?:\/\/)?(?:www.)?(?:pixiv.net\/\w+\/)?(\w+)\/(\d+)/i
 );
