@@ -18,15 +18,20 @@ describe("pixiv tests", () => {
 
   describe("links", () => {
     test("valid links", () => {
-      expect.assertions(1);
+      expect.assertions(2);
       expect(
-        pixivRegExp.test("https://www.pixiv.net/member_illust.php?id=10655554")
+        pixivRegExp.test("https://www.pixiv.net/en/users/10655554/artworks")
+      ).toBeTruthy();
+      expect(
+        pixivRegExp.test("https://www.pixiv.net/en/artworks/85986894")
       ).toBeTruthy();
     });
 
     test("invalid links", () => {
       expect.assertions(4);
-      expect(pixivRegExp.test("https://google.com")).toBeFalsy();
+      expect(
+        pixivRegExp.test("https://www.pixiv.net/en/users?id=10655554")
+      ).toBeFalsy();
       expect(
         pixivRegExp.test("https://www.pixiv.nets/member_illust.php?id=10655554")
       ).toBeFalsy();
@@ -51,7 +56,7 @@ describe("pixiv tests", () => {
       expect.assertions(1);
       try {
         await search.getImages(
-          "https://www.pixiv.net/member_illust.php?id=10655554"
+          "https://www.pixiv.net/en/users/10655554/artworks"
         );
       } catch (e) {
         expect(e.message).toMatch(/Pixiv account credentials need!/);
@@ -85,7 +90,7 @@ describe("pixiv tests", () => {
     test("getting images with valid link", async () => {
       expect.assertions(2);
       const images = await search.getImages(
-        "https://www.pixiv.net/member_illust.php?id=10655554"
+        "https://www.pixiv.net/en/users/10655554/artworks"
       );
       expect(Array.isArray(images)).toBeTruthy();
       expect(images.length).toBeGreaterThan(0);
