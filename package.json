@@ -15,7 +15,7 @@
   "bugs": "https://github.com/Antosik/images-grabber/issues",
   "license": "MIT",
   "dependencies": {
-    "@oclif/command": "^1.6.1",
+    "@oclif/command": "^1.8.0",
     "@oclif/config": "^1.15.1",
     "@oclif/errors": "^1.2.2",
     "@oclif/plugin-help": "^3.1.0",
